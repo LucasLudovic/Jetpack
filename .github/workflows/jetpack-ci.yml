@@ -1,0 +1,78 @@
+name: continous-integration
+
+on:
+  push:
+    branches-ignore: [ga-ignore-*]
+  pull_request:
+    branches-ignore: [ga-ignore-*]
+
+env:
+  URL: git@github.com:EpitechPromo2028/B-NWP-400-BDX-4-1-jetpack-lucas.ludovic.git
+
+jobs:
+    no-test-job:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check github repo
+              uses: actions/checkout@master
+            - name: No test passed
+              run:  |
+                if [[ "${{ github.repository }}" == "${{ env.URL }}" ]]; then
+                  exit 1
+                else
+                  exit 0
+                fi
+
+    check-compilation-server:
+      needs: [no-test-job]
+      uses: ./.github/workflows/check-binary-server.yml
+      with:
+        executable: jetpack_server
+      secrets:
+        GIT_SSH_PRIVATE_KEY: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
+
+    check-compilation-client:
+      needs: [no-test-job]
+      uses: ./.github/workflows/check-binary-client.yml
+      with:
+        executable: jetpack_client
+      secrets:
+        GIT_SSH_PRIVATE_KEY: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
+
+    check-coding-style:
+      runs-on: ubuntu-latest
+      needs: [check-compilation-server]
+      container:
+        image: ghcr.io/epitech/coding-style-checker:latest
+      steps:
+        - name: Checkout GH Repo
+          uses: actions/checkout@master
+        - name: Run coding-style checker
+          run:  check.sh $(pwd) $(pwd)
+        - name: Report Banana result
+          run: |
+            NB_ERRORS=$(cat coding-style-reports.log | wc -l)
+            if [ $NB_ERRORS -ge 1 ]; then
+              while IFS= read -r line
+                do
+                  FILE=$(echo $line | cut -d ':' -f1)
+                  FILE=$(realpath --relative-to=$(pwd) $FILE)
+                  LINE=$(echo $line | cut -d ':' -f2)
+                  ERROR=$(echo $line | cut -d ':' -f3-)
+                  ERROR=$(echo $ERROR | cut -d ':' -f1)
+                  CODE=$(echo $line | cut -d ':' -f4-)
+                echo "::error file=$FILE,line=$LINE,title=$ERROR coding style errors found::$CODE"
+              done < coding-style-reports.log
+                exit 1
+            fi
+              exit 0
+
+    push-mirror:
+      if: github.ref == 'refs/heads/main'
+      needs: [check-coding-style, check-compilation-client]
+      uses: ./.github/workflows/push-mirror.yml
+      with:
+        MIRROR_URL: git@github.com:EpitechPromo2028/B-OOP-400-BDX-4-1-arcade-lucas.ludovic.git
+      secrets:
+        GIT_SSH_PRIVATE_KEY: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
+        MIRROR_REPO: ${{ secrets.MIRROR_REPO }}

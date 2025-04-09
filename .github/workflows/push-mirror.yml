@@ -1,0 +1,48 @@
+name: Push Mirror
+on:
+  workflow_call:
+    inputs:
+      MIRROR_URL:
+        required: true
+        type: string
+    secrets:
+      GIT_SSH_PRIVATE_KEY:
+        required: true
+      MIRROR_REPO:
+        required: true
+
+jobs:
+    push-mirror:
+        runs-on: ubuntu-latest
+        if: github.event_name == 'push'
+        steps:
+            - name: Checkout branch
+              uses: actions/checkout@v4
+              with:
+                  submodules: 'recursive'
+                  fetch-depth: 0
+            - name: Set up SSH key
+              run:  |
+                  mkdir -p ~/.ssh
+                  echo "${{ secrets.GIT_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+                  chmod 600 ~/.ssh/id_rsa
+                  ssh-keyscan github.com >> ~/.ssh/known_hosts
+            - name: Configure Git
+              run: |
+                git config --global user.name "github-actions[bot]"
+                git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            - name: Remove submodules
+              run: |
+                rm .gitmodules
+                rm modules/anal/.gitmodules
+                rm -rf modules/anal/.git*
+                rm -rf modules/anal/doxygen-awesome-css/.git*
+            - name: Push Mirror
+              run: |
+                git rm --cached modules/anal/
+                git add .
+                git rm --cached -r modules/anal/doxygen-awesome-css/
+                git add .
+                git commit -m "chore: Resolve submodules"
+                git remote add epitech "${{ secrets.MIRROR_REPO }}"
+                git push --force epitech
