@@ -20,8 +20,11 @@ int display_help(void)
 
 int main(int argc, char **argv)
 {
-    if (argc < 5 || argc > 6) {
+    if (argc < 5 || argc > 6 || argv == NULL || argv[1] == NULL ||
+        argv[2] == NULL || argv[3] == NULL || argv[4] == NULL) {
         return display_help();
     }
-    return run_app(argv[1]);
+    if (run_app(argv[2], argv[4], argv[5]) != SUCCESS)
+        return EPITECH_FAILURE;
+    return EPITECH_SUCCESS;
 }

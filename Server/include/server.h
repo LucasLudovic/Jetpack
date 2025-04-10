@@ -9,17 +9,25 @@
     #define SERVER_H_
 
     #include <stddef.h>
+    #include <unistd.h>
     #include "player.h"
 
-    #define NB_PLAYER_MAX 10
+    #define NB_PLAYER_MAX 2
 
 typedef struct server_s {
-    int socket;
+    struct pollfd *socket;
+    struct sockaddr_in *address;
+    int port;
+    socklen_t socklen;
     size_t nb_player;
     player_t players[NB_PLAYER_MAX];
-    char *mapFile;
+    char *map_file;
+    int is_debug;
 
-    int (*run)(void);
+    int (*run)(struct server_s *this);
+    void (*destroy)(struct server_s **this);
 } server_t;
+
+server_t *create_server(int port, const char *map, int debug);
 
 #endif /* ifndef SERVER_H_ */

@@ -14,6 +14,9 @@
     #define SUCCESS 0
     #define FAILURE 84
 
+    #define FALSE 0
+    #define TRUE 1
+
     #define AUTOFREE __attribute__((__cleanup__(simple_free)))
     #define AUTOFREE_SERVER __attribute__((__cleanup__(free_server)))
 
