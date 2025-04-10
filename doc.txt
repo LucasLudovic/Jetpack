@@ -1,0 +1,124 @@
+Network Working Group                                                  T. HUART
+Request for Comments: XXXX                                           L. LUDOVIC
+Category: Experimental                                           L. Ortega-cand
+April 2025                                                 Epitech - Promo 2028
+
+Abstract
+
+    This document defines the Jetpack Protocol, an experimental communication
+    protocol designed to support multiplayer gameplay in a 2D networked game
+    inspired by the classic Jetpack title. The protocol specifies how clients
+    communicate with the game server. It also describes the format used to 
+    transmit the game map data, including layout, entities, and relevant
+    metadata necessary for consistent rendering and interaction across clients.
+
+Status of This Memo
+
+    This document describes the Jetpack Protocol developed as part of an
+    academic project at Epitech. It has been drafted using the editorial
+    guidelines set  forth in RFC 7322 to ensure clarity and consistency in its
+    presentation.
+    This memo is provided for experimental and informational purposes only and
+    is not intended as an official standard. The specifications presented
+    herein are subject to revision as the project progresses.
+
+Copyright Notice
+
+    Copyright (c) 2025 by the authors.
+    All rights reserved.
+
+    This document is provided for experimental and informational purposes only.
+    It is not an official standard and is subject to revision.
+    Use, reproduction, and distribution of this document are permitted provided
+    that appropriate credit is given to the authors and any modifications are
+    clearly documented. This document is intended solely for academic and
+    demonstration purposes, and it does not grant any rights for commercial use.
+
+Table of Contents
+
+    1. Introduction
+
+    2. Terminology
+
+    3. Protocol Description
+     3.1. Client-Server Communication
+     3.2. Map Data Format
+
+    4. Security Considerations
+
+    5. Authors’ Addresses
+
+
+1. Introduction
+
+    This document describes the Jetpack Protocol, which defines the
+    communication between clients and the server, as well as the format for
+    map data. Developed as part of an academic project at Epitech, this
+    protocol aims to establish a clear and consistent structure for network
+    interactions and map representation in a gaming environment.
+
+2. Terminology
+
+    In this document, the following terms are defined as follows:
+        Client: Any application or device that connects to the server to 
+        send or receive data.
+        Server: The central entity that handles client connections, processes
+        requests, and manages the overall system state.
+        Map: The data structure representing the game environment,
+        including its layout, interactive elements, and associated metadata.
+        Protocol: A set of rules and conventions outlining how clients and
+        the server communicate, including the format of the exchanged data.
+
+3. Protocol Description
+    
+    3.1 Client-Server Communication:
+        This part outlines the procedures and rules governing how clients
+        establish a connection with the server, exchange messages, and
+        maintain a synchronized session. It will include the message
+        formats, handshake process, error handling, and timing considerations.
+
+    3.2 Map Data Format:
+    This section describes the structure used to represent the game map.
+    It covers the layout, placement of interactive elements, and any
+    metadata necessary to ensure that the map is correctly rendered and
+    interpreted by both clients and the server.
+
+4. Security Considerations
+
+    As the Jetpack Protocol is designed for use in a controlled academic
+    or experimental environment, security has not been a primary focus in 
+    its initial development. However, several potential security issues
+    should be considered if the protocol were to be used in a broader
+    or public context:
+
+    Authentication:
+        The current protocol does not implement any form of client
+        authentication. This means that any user can connect to the
+        server without verification, which could lead to unauthorized
+        access or abuse.
+
+    Data Integrity:
+        Messages exchanged between the client and server are not protected
+        against tampering. Without checksums, signatures, or encryption,
+        malicious actors could potentially alter data in transit.
+
+    Denial of Service (DoS):
+        The protocol does not include mechanisms to detect or mitigate excessive
+        or malicious traffic. A large number of connection attempts or malformed
+        messages could overwhelm the server.
+
+    Man-in-the-Middle (MitM) Attacks:
+        Because communication is not encrypted, an attacker intercepting the
+        traffic could read or modify messages exchanged between clients and the
+        server.
+
+6. Authors' Addresses
+
+    T. HUART
+    Epitech – Promo 2028
+
+    L. LUDOVIC
+    Epitech – Promo 2028  
+
+    L. Ortega-cand
+    Epitech – Promo 2028  
