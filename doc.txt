@@ -1,6 +1,6 @@
 Network Working Group                                                  T. HUART
 Request for Comments: XXXX                                           L. LUDOVIC
-Category: Experimental                                           L. Ortega-cand
+Category: Experimental                                           L. ORTEGA-CAND
 April 2025                                                 Epitech - Promo 2028
 
 Abstract
@@ -8,7 +8,7 @@ Abstract
     This document defines the Jetpack Protocol, an experimental communication
     protocol designed to support multiplayer gameplay in a 2D networked game
     inspired by the classic Jetpack title. The protocol specifies how clients
-    communicate with the game server. It also describes the format used to 
+    communicate with the game server. It also describes the format used to
     transmit the game map data, including layout, entities, and relevant
     metadata necessary for consistent rendering and interaction across clients.
 
@@ -60,7 +60,7 @@ Table of Contents
 2. Terminology
 
     In this document, the following terms are defined as follows:
-        Client: Any application or device that connects to the server to 
+        Client: Any application or device that connects to the server to
         send or receive data.
         Server: The central entity that handles client connections, processes
         requests, and manages the overall system state.
@@ -70,7 +70,7 @@ Table of Contents
         the server communicate, including the format of the exchanged data.
 
 3. Protocol Description
-    
+
     3.1 Client-Server Communication:
         This part outlines the procedures and rules governing how clients
         establish a connection with the server, exchange messages, and
@@ -86,7 +86,7 @@ Table of Contents
 4. Security Considerations
 
     As the Jetpack Protocol is designed for use in a controlled academic
-    or experimental environment, security has not been a primary focus in 
+    or experimental environment, security has not been a primary focus in
     its initial development. However, several potential security issues
     should be considered if the protocol were to be used in a broader
     or public context:
@@ -118,7 +118,7 @@ Table of Contents
     Epitech – Promo 2028
 
     L. LUDOVIC
-    Epitech – Promo 2028  
+    Epitech – Promo 2028
 
-    L. Ortega-cand
-    Epitech – Promo 2028  
+    L. ORTEGA-CAND
+    Epitech – Promo 2028
