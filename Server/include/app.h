@@ -8,6 +8,6 @@
 #ifndef APP_H_
     #define APP_H_
 
-int run_app(char *map);
+int run_app(const char *port, const char *map, const char *debug);
 
 #endif
