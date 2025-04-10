@@ -19,6 +19,7 @@ static void bind_server(server_t *server)
 {
     if (bind(server->socket->fd, (struct sockaddr *)server->address,
             server->socklen) < 0) {
+        server->destroy(&server);
         fprintf(stderr, "Unable to bind the socket\n");
         exit(EPITECH_FAILURE);
     }
@@ -64,12 +65,19 @@ static void init_address(server_t *this, int portNumber)
     this->address->sin_family = AF_INET;
 }
 
-static int run_server(server_t *server)
+static int run_server(server_t *this)
 {
-    bind_server(server);
-    listen_to_server(server);
+    bind_server(this);
+    listen_to_server(this);
     return SUCCESS;
 }
+
+static void init_server_methods(server_t *this)
+{
+    this->run = run_server;
+    this->destroy = free_server;
+}
+
 
 server_t *create_server(int port, const char *map, int debug)
 {
@@ -83,12 +91,12 @@ server_t *create_server(int port, const char *map, int debug)
         fprintf(stderr, "Wrong map");
         return NULL;
     }
-    server->port = port;
-    server->run = run_server;
-    server->destroy = free_server;
-    server->nb_player = NB_PLAYER_MAX;
-    server->map_file = strdup(map);
+    init_server_methods(server);
+    server->is_running = TRUE;
     server->is_debug = debug;
+    server->port = port;
+    server->map_file = strdup(map);
+    server->nb_player = 0;
     init_address(server, port);
     server->socklen = sizeof(*server->address);
     init_socket(server);
