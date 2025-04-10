@@ -24,9 +24,7 @@
             cmake
             doxygen
             pkg-config
-            SDL2
-            SDL2_ttf
-            SDL2_image
+            sfml
           ] ++ deps;
         };
 
