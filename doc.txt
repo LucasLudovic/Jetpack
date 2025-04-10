@@ -77,6 +77,34 @@ Table of Contents
         maintain a synchronized session. It will include the message
         formats, handshake process, error handling, and timing considerations.
 
+    ALL:
+        SERVER:
+            `WAITING_PLAYERS`
+            `GAME_START:PLAYER_NUMBER`
+        Client:
+            `CLIENT_READY`
+
+    PLAYER:
+        SERVER:
+            `NEW_POS:$POSX:$POSY:$COLL`
+            `SCORE:$PLAYER:$SCORE:$COLL`
+        Client:
+            `PRESS`
+
+    PIECE:
+        SERVER:
+            `PIECE_STATE:$POSX:$POSY`
+        Client:
+
+    MAP:
+        Server:
+            `SEND_MAP` -> send map
+            `$ASSET_NAME_MAP:$POSX:$POSY` -> send the map asset and it position
+            `END_MAP` -> end map
+        Client:
+            `MAP_OKAY` -> if the map is correctly loaded
+            `MAP_NOT_OKAY` -> if the map is not correctly loaded
+
     3.2 Map Data Format:
     This section describes the structure used to represent the game map.
     It covers the layout, placement of interactive elements, and any
