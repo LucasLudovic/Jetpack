@@ -8,7 +8,6 @@
 #include "Socket.hpp"
 #include "Inputs/Inputs.hpp"
 #include <arpa/inet.h>
-#include <array>
 #include <cstdlib>
 #include <netinet/in.h>
 #include <string>
