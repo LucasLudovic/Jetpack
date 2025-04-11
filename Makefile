@@ -5,54 +5,21 @@
 ## make
 ##
 
-all: server client
+all: client server
 
-SERVER_SRC	=	Server/src/main.c
+server:
+	make -C Server
 
-SERVER_OBJ	=	$(SERVER_SRC:.c=.o)
-
-SERVER_CC	=	gcc
-
-SERVER_NAME	=	jetpack_server
-
-CC	=	gcc
-
-$(SERVER_NAME): $(SERVER_OBJ)
-	$(CC) -o $(SERVER_NAME) $(SERVER_OBJ) $(CFLAGS) $(CPPFLAGS)
-
-
-CLIENT_SRC	=	Client/src/main.cpp
-
-CLIENT_OBJ	=	$(CLIENT_SRC:.cpp=.o)
-
-CLIENT_CC	=	g++
-
-CLIENT_NAME	=	jetpack_client
-
-CXX = g++
-
-$(CLIENT_NAME): $(CLIENT_OBJ)
-	$(CXX) -o $(CLIENT_NAME) $(CLIENT_OBJ) $(CFLAGS)
-
-client: $(CLIENT_NAME)
-
-server: $(SERVER_NAME)
-
-CFLAGS	=	-W -Wall -Wextra -Wpedantic
-
-CPPFLAGS = -I Server/include
-
+client:
+	make -C Client
 
 clean:
-	@rm -f $(SERVER_OBJ)
-	@rm -f $(CLIENT_OBJ)
-	@find . -name "*~" -delete
+	@make clean -C Client
+	@make clean -C Server
 
 fclean: clean
-	@rm -f $(SERVER_NAME)
-	@rm -f $(CLIENT_NAME)
-	@find . -name "*.gcda" -delete
-	@find . -name "*.gcno" -delete
+	@make fclean -C Client
+	@make fclean -C Server
 
 re: fclean all
 
