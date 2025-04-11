@@ -1,2 +1,7 @@
 .envrc
 .direnv
+jetpack_client
+jetpack_server
+*.o
+compile_commands.json
+.cache
