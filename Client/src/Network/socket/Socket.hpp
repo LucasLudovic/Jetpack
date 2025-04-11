@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "Inputs/Inputs.hpp"
 #include <exception>
 #include <memory>
 #include <netinet/in.h>
@@ -33,7 +34,7 @@ namespace client {
         ~Socket();
 
         void createConnection();
-        void sendInput(client::Intput input) const;
+        void sendInput(client::Inputs input) const;
         const std::string &getServerInformation() const;
 
        private:
