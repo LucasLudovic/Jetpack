@@ -9,6 +9,7 @@
 #include "my_macros.h"
 #include "server.h"
 #include <netinet/in.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -65,12 +66,6 @@ static void init_address(server_t *this, int portNumber)
     this->address->sin_family = AF_INET;
 }
 
-static int run_server(server_t *this)
-{
-    bind_server(this);
-    listen_to_server(this);
-    return SUCCESS;
-}
 
 static void init_server_methods(server_t *this)
 {
@@ -100,5 +95,7 @@ server_t *create_server(int port, const char *map, int debug)
     init_address(server, port);
     server->socklen = sizeof(*server->address);
     init_socket(server);
+    bind_server(server);
+    listen_to_server(server);
     return server;
 }

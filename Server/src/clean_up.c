@@ -5,6 +5,7 @@
 ** Free functions
 */
 
+#include "player.h"
 #include "server.h"
 #include <netinet/in.h>
 #include <stdio.h>
@@ -42,4 +43,20 @@ void free_server(server_t **server)
         free((*server)->address);
     }
     free(*server);
+}
+
+void free_player(player_t **player)
+{
+    if (!player || !(*player)) {
+        return;
+    }
+    if ((*player)->socket) {
+        if ((*player)->socket->fd >= 0) {
+            close((*player)->socket->fd);
+        }
+        free((*player)->socket);
+    }
+    if ((*player)->address) {
+        free((*player)->address);
+    }
 }
