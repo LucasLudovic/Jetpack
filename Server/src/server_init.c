@@ -96,6 +96,9 @@ server_t *create_server(int port, const char *map, int debug)
     server->socklen = sizeof(*server->address);
     init_socket(server);
     bind_server(server);
+    for (size_t i = 0; i < NB_PLAYER_MAX; i += 1) {
+        server->players[i] = NULL;
+    }
     listen_to_server(server);
     return server;
 }

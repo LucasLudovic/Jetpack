@@ -5,6 +5,7 @@
 ** Free functions
 */
 
+#include "cleanup.h"
 #include "player.h"
 #include "server.h"
 #include <netinet/in.h>
@@ -42,7 +43,11 @@ void free_server(server_t **server)
     if ((*server)->address) {
         free((*server)->address);
     }
+    for (size_t i = 0; i < NB_PLAYER_MAX; i += 1) {
+        free_player(&(*server)->players[i]);
+    }
     free(*server);
+    *server = NULL;
 }
 
 void free_player(player_t **player)
@@ -56,7 +61,6 @@ void free_player(player_t **player)
         }
         free((*player)->socket);
     }
-    if ((*player)->address) {
-        free((*player)->address);
-    }
+    free(*player);
+    *player = NULL;
 }

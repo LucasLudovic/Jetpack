@@ -6,6 +6,7 @@
 */
 
 #include "cleanup.h"
+#include "instructions.h"
 #include "my_macros.h"
 #include "server.h"
 #include <netinet/in.h>
@@ -24,11 +25,11 @@ static void accept_connection(server_t *server)
     pfds = malloc(sizeof(struct pollfd));
     if (!pfds) {
         fprintf(stderr, "Unable to alloc pollfd\n");
-        free_server(server);
+        free_server(&server);
         exit(EPITECH_FAILURE);
     }
-    pfds->fd = accept(server->socket->fd,
-        (struct sockaddr *)server->address, &server->socklen);
+    pfds->fd = accept(server->socket->fd, (struct sockaddr *)server->address,
+        &server->socklen);
     if (pfds->fd < 0) {
         free(pfds);
         fprintf(stderr, "Unable to accept connection\n");
@@ -46,60 +47,85 @@ static void accept_connection(server_t *server)
 }
 
 static int check_remove_socket(
-    server_t *server, size_t i)
+    server_t *server, struct pollfd *pfds, const size_t i)
 {
-    if (server->players[i]->socket->revents & POLLHUP ||
-        server->players[i]->socket->revents & POLLERR) {
+    if (pfds->revents & POLLHUP ||
+        pfds->revents & POLLERR) {
         if (i == 0) {
-            free_server(&server);
             fprintf(stderr, "Error on server socker\n");
-            exit(EPITECH_FAILURE);
+            server->is_running = FALSE;
+            return TRUE;
         }
-        free_player(&(server->players[i]));
+        free_player(&(server->players[i - 1]));
+        server->nb_player -= 1;
+        for (size_t j = i - 1; j < NB_PLAYER_MAX - 1; j += 1) {
+            server->players[j] = server->players[j + 1];
+        }
+        server->players[NB_PLAYER_MAX - 1] = NULL;
         return TRUE;
     }
     return FALSE;
 }
 
-static void check_pfds(server_t *server, struct pollfd *clients_pfds, size_t i)
+static void check_pfds(server_t *server, struct pollfd *players_pfds, size_t i)
 {
-    if (check_remove_socket(server, i))
+    if (check_remove_socket(server, players_pfds, i))
         return;
-    if (clients_pfds[i].revents & POLLIN) {
+    if (players_pfds[i].revents & POLLIN) {
         if (i == 0) {
             accept_connection(server);
             return;
         }
-        execute_instructions(server, &clients_pfds[i], i - 1);
+        execute_instructions(server, server->players[i]);
     }
 }
 
 static void loop_poll(
-    struct pollfd *clients_pfds, server_t *server, size_t nb_clients)
+    struct pollfd *players_pfds, server_t *server, size_t nb_players)
 {
-    signal(SIGPIPE, SIG_IGN);
-    for (size_t i = 0; i < nb_clients + 1; i += 1) {
-        check_pfds(server, clients_pfds, i);
+    for (size_t i = 0; i < nb_players + 1; i += 1) {
+        check_pfds(server, players_pfds, i);
     }
+}
+
+static struct pollfd *get_pfds_from_players(server_t *server)
+{
+    struct pollfd *pfds =
+        malloc(sizeof(struct pollfd) * (server->nb_player + 1));
+
+    if (!pfds) {
+        fprintf(stderr, "Unable to alloc pfds");
+        free_server(&server);
+        exit(EPITECH_FAILURE);
+    }
+    pfds[0] = *server->socket;
+    for (size_t i = 1; i < server->nb_player + 1; i += 1) {
+        pfds[i] = *server->players[i - 1]->socket;
+    }
+    return pfds;
 }
 
 static void loop_server(server_t *server)
 {
     int ret = 0;
-    size_t nb_clients = 0;
-    struct pollfd *clients_pfds = NULL;
+    size_t nb_players = 0;
+    struct pollfd *players_pfds = NULL;
 
-    // clients_pfds = get_pfds_from_clients(server);
-    nb_clients = server->nb_player;
-    ret = poll(clients_pfds, nb_clients + 1, -1);
+    players_pfds = get_pfds_from_players(server);
+    nb_players = server->nb_player;
+    ret = poll(players_pfds, nb_players + 1, -1);
     if (ret > 0) {
-        loop_poll(clients_pfds, server, nb_clients);
+        loop_poll(players_pfds, server, nb_players);
     }
-    free(clients_pfds);
+    free(players_pfds);
+    server->is_running = FALSE;
 }
 
 int run_server(server_t *this)
 {
-    while (this->is_running) {}
+    signal(SIGPIPE, SIG_IGN);
+    while (this->is_running) {
+        loop_server(this);
+    }
     return SUCCESS;
 }
