@@ -5,7 +5,14 @@
 ## Makefile for server
 ##
 
-SRC	=	./src/main.c
+SRC	=	src/main.c
+SRC	+=	src/clean_up.c
+SRC	+=	src/instructions.c
+SRC	+=	src/player.c
+SRC	+=	src/server.c
+SRC	+=	src/server_init.c
+SRC	+=	src/server_run.c
+
 
 OBJ	=	$(SRC:.c=.o)
 
