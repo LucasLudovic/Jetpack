@@ -25,12 +25,13 @@ typedef struct server_s {
     socklen_t socklen;
 
     size_t nb_player;
-    player_t players[NB_PLAYER_MAX];
+    player_t *players[NB_PLAYER_MAX];
 
     int (*run)(struct server_s *this);
     void (*destroy)(struct server_s **this);
 } server_t;
 
 server_t *create_server(int port, const char *map, int debug);
+int run_server(struct server_s *this);
 
 #endif /* ifndef SERVER_H_ */
