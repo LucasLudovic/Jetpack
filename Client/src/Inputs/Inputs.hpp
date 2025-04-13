@@ -11,7 +11,7 @@
 #include <string>
 
 namespace client {
-    enum class keys {
+    enum class ev_keys {
         KEY_NULL,
         KEY_SPACE,
         KEY_A,
@@ -50,10 +50,24 @@ namespace client {
         KEY_7,
         KEY_8,
         KEY_9,
+        SPECIAL_KEY_SPACE,
+        SPECIAL_KEY_BACKSPACE,
+        SPECIAL_KEY_ENTER,
+        ARROW_LEFT,
+        ARROW_RIGHT,
+        ARROW_DOWN,
+        ARROW_UP,
+        CLOSE,
+    };
+
+    enum class ev_state {
+        PRESSED,
+        RELEASED,
     };
 
     class Inputs {
        public:
-        std::optional<keys> _key;
+        std::optional<ev_keys> key;
+        std::optional<ev_state> state;
     };
 }  // namespace client
