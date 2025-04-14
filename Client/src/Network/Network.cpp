@@ -10,10 +10,13 @@
 #include "Network/socket/Socket.hpp"
 #include <memory>
 #include <string>
+#include <iostream>
 
 client::Network::Network(const std::string &ip, const std::string &port)
-    : _socket(std::make_unique<client::Socket>(ip, port))
-{}
+{
+    this->_socket = std::make_unique<client::Socket>(ip, port);
+    this->_socket->createConnection();
+}
 
 client::Network::~Network() {}
 

@@ -6,6 +6,8 @@
 ##
 
 SRC	=	./src/main.cpp
+SRC	+=	./src/client.cpp
+SRC	+=	./src/JetpackClient/JetpackClient.cpp
 SRC	+=	./src/Network/Network.cpp
 SRC	+=	./src/Network/socket/Socket.cpp
 SRC	+=	./src/Display/Display.cpp

@@ -19,7 +19,7 @@ namespace client {
        public:
         class SocketError : public std::exception {
            public:
-            SocketError() { this->_msg = "Socket Error"; }
+            SocketError(const std::string &msg) { this->_msg = msg; }
 
             const char *what() const noexcept override
             {

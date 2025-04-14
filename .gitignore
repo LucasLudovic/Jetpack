@@ -6,3 +6,4 @@ jetpack_server
 compile_commands.json
 .cache
 map/
+map.txt
