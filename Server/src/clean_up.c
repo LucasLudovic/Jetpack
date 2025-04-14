@@ -39,14 +39,14 @@ void free_server(server_t **server)
     if ((*server)->address)
         free((*server)->address);
     for (size_t i = 0; i < NB_PLAYER_MAX; i += 1)
-        free_player(&(*server)->players[i]);
+        free_player((&(*server)->players[i]));
     free(*server);
     *server = NULL;
 }
 
 void free_player(player_t **player)
 {
-    if (!player || !(*player)) {
+    if (player == NULL || *player == NULL) {
         return;
     }
     if ((*player)->socket) {
@@ -54,6 +54,7 @@ void free_player(player_t **player)
             close((*player)->socket->fd);
         }
         free((*player)->socket);
+        (*player)->socket = NULL;
     }
     free(*player);
     *player = NULL;

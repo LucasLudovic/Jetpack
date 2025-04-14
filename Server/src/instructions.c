@@ -9,11 +9,17 @@
 #include "player.h"
 #include "my_macros.h"
 #include <stdio.h>
+#include <sys/poll.h>
 
-int execute_instructions(server_t *server, player_t *player)
+int execute_instructions(server_t *server, player_t *player, size_t i)
 {
-    (void)server;
-    (void)player;
-    printf("SEND INSTRUCTIONS");
+    char buff[BUFFSIZE] = {0};
+    size_t size_read = 0;
+
+    size_read = read(player->socket->fd, buff, BUFFSIZE);
+    if (size_read == 0) {
+        server->remove_player(server, i);
+        return FAILURE;
+    }
     return SUCCESS;
 }

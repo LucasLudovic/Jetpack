@@ -31,9 +31,12 @@ typedef struct server_s {
     void (*destroy)(struct server_s **this);
     void (*send)(player_t *player, const char *msg);
     void (*send_map)(struct server_s *server);
+    void (*remove_player)(struct server_s *server, size_t i);
 } server_t;
 
 server_t *create_server(int port, const char *map, int debug);
 int run_server(struct server_s *this);
+void remove_player(server_t *server, size_t i);
+
 
 #endif /* ifndef SERVER_H_ */
