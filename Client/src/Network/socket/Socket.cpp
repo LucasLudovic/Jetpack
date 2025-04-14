@@ -6,7 +6,9 @@
 //
 
 #include "Socket.hpp"
+#include "Inputs/Inputs.hpp"
 #include <arpa/inet.h>
+#include <array>
 #include <cstdlib>
 #include <netinet/in.h>
 #include <string>
@@ -28,4 +30,22 @@ void client::Socket::createConnection()
     if (connect(this->_socket, reinterpret_cast<sockaddr *>(this->_address.get()), this->_addrlen) == -1) {
         throw SocketError();
     }
+}
+
+void client::Socket::sendInput(client::Inputs input) const
+{
+    if (input.state == ev_state::PRESSED)
+        if (send(this->_socket, "PRESS\r\n", 7, 0) == -1) {
+            throw SocketError();
+        }
+}
+
+
+std::string client::Socket::getServerInformation() const 
+{
+    char buf[256];
+
+    if (recv(this->_socket, buf, 256, 0) == -1)
+        throw SocketError();
+    return buf;
 }
