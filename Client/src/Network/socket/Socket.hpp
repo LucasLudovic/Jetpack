@@ -35,7 +35,7 @@ namespace client {
 
         void createConnection();
         void sendInput(client::Inputs input) const;
-        const std::string &getServerInformation() const;
+        [[nodiscard]] std::string getServerInformation() const;
 
        private:
         int _socket;
