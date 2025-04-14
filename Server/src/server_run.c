@@ -17,6 +17,17 @@
 #include <sys/poll.h>
 #include <sys/socket.h>
 
+static void store_player(server_t *server, struct pollfd *pfds)
+{
+    server->players[server->nb_player] = create_player(pfds);
+    server->nb_player += 1;
+    if (server->players[server->nb_player - 1] == NULL) {
+        fprintf(stderr, "Unable to create player");
+        free_server(&server);
+        exit(EPITECH_FAILURE);
+    }
+}
+
 static void accept_connection(server_t *server)
 {
     struct pollfd *pfds = NULL;
@@ -36,13 +47,7 @@ static void accept_connection(server_t *server)
         return;
     }
     pfds->events = POLLIN;
-    server->players[server->nb_player] = create_player(pfds);
-    server->nb_player += 1;
-    if (server->players[server->nb_player - 1] == NULL) {
-        fprintf(stderr, "Unable to create player");
-        free_server(&server);
-        exit(EPITECH_FAILURE);
-    }
+    store_player(server, pfds);
     write(pfds->fd, msg, strlen(msg));
 }
 

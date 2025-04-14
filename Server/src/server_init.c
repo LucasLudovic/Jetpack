@@ -66,13 +66,33 @@ static void init_address(server_t *this, int portNumber)
     this->address->sin_family = AF_INET;
 }
 
+static void send_message(player_t *player, const char *msg)
+{
+    char endl[] = "\r\n";
+
+    if (player == NULL || player->socket == NULL || player->socket->fd < 0) {
+        return;
+    }
+    write(player->socket->fd, msg, strlen(msg));
+    write(player->socket->fd, endl, strlen(endl));
+}
 
 static void init_server_methods(server_t *this)
 {
     this->run = run_server;
     this->destroy = free_server;
+    this->send = send_message;
 }
 
+static void init_server_attribut(
+    server_t *this, int port, const char *map, int debug)
+{
+    this->is_running = TRUE;
+    this->is_debug = debug;
+    this->port = port;
+    this->map_file = strdup(map);
+    this->nb_player = 0;
+}
 
 server_t *create_server(int port, const char *map, int debug)
 {
@@ -87,11 +107,7 @@ server_t *create_server(int port, const char *map, int debug)
         return NULL;
     }
     init_server_methods(server);
-    server->is_running = TRUE;
-    server->is_debug = debug;
-    server->port = port;
-    server->map_file = strdup(map);
-    server->nb_player = 0;
+    init_server_attribut(server, port, map, debug);
     init_address(server, port);
     server->socklen = sizeof(*server->address);
     init_socket(server);

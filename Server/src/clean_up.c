@@ -25,27 +25,21 @@ void simple_free(void **ptr)
 
 void free_server(server_t **server)
 {
-    if (!server || !(*server)) {
+    if (!server || !(*server))
         return;
-    }
-    if ((*server)->is_debug) {
+    if ((*server)->is_debug)
         printf("Server Cleanup\n");
-    }
-    if ((*server)->map_file) {
+    if ((*server)->map_file)
         free((*server)->map_file);
-    }
     if ((*server)->socket) {
-        if ((*server)->socket->fd >= 0) {
+        if ((*server)->socket->fd >= 0)
             close((*server)->socket->fd);
-        }
         free((*server)->socket);
     }
-    if ((*server)->address) {
+    if ((*server)->address)
         free((*server)->address);
-    }
-    for (size_t i = 0; i < NB_PLAYER_MAX; i += 1) {
+    for (size_t i = 0; i < NB_PLAYER_MAX; i += 1)
         free_player(&(*server)->players[i]);
-    }
     free(*server);
     *server = NULL;
 }
