@@ -8,9 +8,9 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <memory>
 #include <vector>
-#include "../Inputs/Inputs.hpp"
+#include <memory>
+#include "Inputs/Inputs.hpp"
 
 namespace client {
     class Display {
