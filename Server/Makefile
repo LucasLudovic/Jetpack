@@ -12,6 +12,7 @@ SRC	+=	src/player.c
 SRC	+=	src/server.c
 SRC	+=	src/server_init.c
 SRC	+=	src/server_run.c
+SRC	+=	src/map.c
 
 
 OBJ	=	$(SRC:.c=.o)

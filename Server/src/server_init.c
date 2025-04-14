@@ -9,12 +9,12 @@
 #include "my_macros.h"
 #include "server.h"
 #include <netinet/in.h>
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
+#include <map.h>
 
 static void bind_server(server_t *server)
 {
@@ -82,6 +82,7 @@ static void init_server_methods(server_t *this)
     this->run = run_server;
     this->destroy = free_server;
     this->send = send_message;
+    this->send_map = send_map;
 }
 
 static void init_server_attribut(
