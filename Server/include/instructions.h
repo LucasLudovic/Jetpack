@@ -8,8 +8,8 @@
 #ifndef INSTRUCTIONS_H_
     #define INSTRUCTIONS_H_
 
-#include "server.h"
-#include "player.h"
+    #include "server.h"
+    #include "player.h"
 
 int execute_instructions(server_t *server, player_t *player);
 
