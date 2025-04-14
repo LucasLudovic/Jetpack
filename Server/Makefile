@@ -19,7 +19,7 @@ OBJ	=	$(SRC:.c=.o)
 
 NAME	=	../jetpack_server
 
-CC	=	gcc
+CC	=	gcc -g3
 
 CFLAGS	=	-W -Wall -Wextra -Wpedantic
 

@@ -80,6 +80,7 @@ static void send_message(player_t *player, const char *msg)
 static void init_server_methods(server_t *this)
 {
     this->run = run_server;
+    this->remove_player = remove_player;
     this->destroy = free_server;
     this->send = send_message;
     this->send_map = send_map;
@@ -107,15 +108,14 @@ server_t *create_server(int port, const char *map, int debug)
         fprintf(stderr, "Wrong map");
         return NULL;
     }
+    for (size_t i = 0; i < NB_PLAYER_MAX; i += 1)
+        server->players[i] = NULL;
     init_server_methods(server);
     init_server_attribut(server, port, map, debug);
     init_address(server, port);
     server->socklen = sizeof(*server->address);
     init_socket(server);
     bind_server(server);
-    for (size_t i = 0; i < NB_PLAYER_MAX; i += 1) {
-        server->players[i] = NULL;
-    }
     listen_to_server(server);
     return server;
 }
