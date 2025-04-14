@@ -9,11 +9,12 @@
 #include "Inputs/Inputs.hpp"
 #include <arpa/inet.h>
 #include <cstdlib>
+#include <cstring>
+#include <iostream>
 #include <memory>
 #include <netinet/in.h>
 #include <string>
 #include <sys/socket.h>
-#include <iostream>
 
 client::Socket::Socket(const std::string &ip, const std::string &port)
 {
@@ -29,21 +30,22 @@ client::Socket::~Socket() {}
 
 void client::Socket::createConnection()
 {
-    if (connect(this->_socket, reinterpret_cast<sockaddr *>(this->_address.get()), this->_addrlen) == -1) {
+    if (connect(this->_socket,
+            reinterpret_cast<sockaddr *>(this->_address.get()),
+            this->_addrlen) == -1) {
         throw SocketError("Connect Failed");
     }
 }
 
-void client::Socket::sendInput(client::Inputs input) const
+void client::Socket::sendInput(const std::string &msg) const
 {
-    if (input.state == ev_state::PRESSED)
-        if (send(this->_socket, "PRESS\r\n", 7, 0) == -1) {
-            throw SocketError("Send Failed");
-        }
+    std::string messageFormat = msg + "\r\n";
+    if (send(this->_socket, messageFormat.c_str(), strlen(messageFormat.c_str()), 0) == -1) {
+        throw SocketError("Send Failed");
+    }
 }
 
-
-std::string client::Socket::getServerInformation() const 
+std::string client::Socket::getServerInformation() const
 {
     char buf[256];
 
