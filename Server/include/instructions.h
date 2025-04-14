@@ -11,6 +11,6 @@
     #include "server.h"
     #include "player.h"
 
-int execute_instructions(server_t *server, player_t *player);
+int execute_instructions(server_t *server, player_t *player, size_t i);
 
 #endif
