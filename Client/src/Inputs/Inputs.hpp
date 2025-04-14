@@ -8,7 +8,6 @@
 #pragma once
 
 #include <optional>
-#include <string>
 
 namespace client {
     enum class ev_keys {
