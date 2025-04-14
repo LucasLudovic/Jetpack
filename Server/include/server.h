@@ -17,6 +17,8 @@
 typedef struct server_s {
     int is_debug;
     int is_running;
+    int game_start;
+    int map_sent;
     char *map_file;
 
     struct pollfd *socket;
