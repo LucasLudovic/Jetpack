@@ -7,16 +7,20 @@
 
 #pragma once
 
+#include "Inputs/Inputs.hpp"
+#include "Network/socket/Socket.hpp"
+#include <memory>
 #include <string>
+
 namespace client {
     class Network {
        public:
-        Network();
+        Network(const std::string &ip, const std::string &port);
         ~Network();
 
-        void createConnection(const std::string &ip, const std::string &port);
-        void sendInputToServer() const;
-        void retrieveServerInformation();
+        void sendInputToServer(client::Inputs input) const;
+        std::string retrieveServerInformation() const;
        private:
+        std::unique_ptr<client::Socket> _socket;
     };
 }  // namespace client
