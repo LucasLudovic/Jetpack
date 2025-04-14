@@ -7,6 +7,7 @@
 
 SRC	=	./src/main.cpp
 SRC	+=	./src/Network/socket/Socket.cpp
+SRC	+=	./src/Display/Display.cpp
 
 OBJ	=	$(SRC:.cpp=.o)
 
@@ -16,12 +17,14 @@ CC	=	g++
 
 CFLAGS	=	-W -Wall -Wextra -Wpedantic
 
+SFML = -lsfml-graphics -lsfml-window -lsfml-system
+
 CPPFLAGS	=	-I src
 
 all:	$(NAME)
 
 $(NAME):	$(OBJ)
-	$(CC) -o $(NAME) $(OBJ) $(CFLAGS) $(CPPFLAGS)
+	$(CC) -o $(NAME) $(OBJ) $(CFLAGS) $(CPPFLAGS) $(SFML)
 
 clean:
 	@rm -f $(OBJ)
