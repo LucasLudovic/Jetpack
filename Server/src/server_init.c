@@ -93,7 +93,9 @@ static void init_server_attribut(
     this->is_debug = debug;
     this->port = port;
     this->map_file = strdup(map);
+    this->map_sent = FALSE;
     this->nb_player = 0;
+    this->game_start = FALSE;
 }
 
 server_t *create_server(int port, const char *map, int debug)

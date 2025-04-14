@@ -21,5 +21,7 @@ int execute_instructions(server_t *server, player_t *player, size_t i)
         server->remove_player(server, i);
         return FAILURE;
     }
+    if (!server->game_start)
+        return SUCCESS;
     return SUCCESS;
 }

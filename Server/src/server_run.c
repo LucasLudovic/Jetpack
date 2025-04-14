@@ -28,10 +28,22 @@ static void store_player(server_t *server, struct pollfd *pfds)
     server->nb_player += 1;
 }
 
+static int refuse_connection(server_t *server, struct pollfd *pfds)
+{
+    const char msg[] = "Too many players, unable to accept connection\r\n";
+
+    if (server->nb_player == NB_PLAYER_MAX){
+        write(pfds->fd, msg, strlen(msg));
+        close(pfds->fd);
+        return TRUE;
+    }
+    return FALSE;
+}
+
 static void accept_connection(server_t *server)
 {
     struct pollfd *pfds = NULL;
-    const char *msg = "220 Connection established.\r\n";
+    const char msg[] = "220 Connection established.\r\n";
 
     pfds = malloc(sizeof(struct pollfd));
     if (!pfds) {
@@ -46,6 +58,8 @@ static void accept_connection(server_t *server)
         fprintf(stderr, "Unable to accept connection\n");
         return;
     }
+    if (refuse_connection(server, pfds) == TRUE)
+        return;
     pfds->events = POLLIN;
     store_player(server, pfds);
     write(pfds->fd, msg, strlen(msg));
