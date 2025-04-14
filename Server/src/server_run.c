@@ -123,7 +123,6 @@ static void loop_server(server_t *server)
         loop_poll(players_pfds, server, nb_players);
     }
     free(players_pfds);
-    server->is_running = FALSE;
 }
 
 int run_server(server_t *this)
