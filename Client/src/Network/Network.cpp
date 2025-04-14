@@ -8,9 +8,9 @@
 #include "Network.hpp"
 #include "Inputs/Inputs.hpp"
 #include "Network/socket/Socket.hpp"
+#include <iostream>
 #include <memory>
 #include <string>
-#include <iostream>
 
 client::Network::Network(const std::string &ip, const std::string &port)
 {
@@ -20,9 +20,9 @@ client::Network::Network(const std::string &ip, const std::string &port)
 
 client::Network::~Network() {}
 
-void client::Network::sendInputToServer(client::Inputs input) const
+void client::Network::sendInputToServer(const std::string &msg) const
 {
-    this->_socket->sendInput(input);
+    this->_socket->sendInput(msg);
 }
 
 std::string client::Network::retrieveServerInformation() const
