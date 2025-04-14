@@ -18,7 +18,7 @@ namespace client {
         Network(const std::string &ip, const std::string &port);
         ~Network();
 
-        void sendInputToServer(client::Inputs input) const;
+        void sendInputToServer(const std::string &msg) const;
         std::string retrieveServerInformation() const;
        private:
         std::unique_ptr<client::Socket> _socket;

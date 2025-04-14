@@ -9,6 +9,8 @@
 
 #include <cstdint>
 #include <string>
+#include <queue>
+#include <vector>
 
 namespace client {
     class JetpackClient {
@@ -21,5 +23,8 @@ namespace client {
        private:
         std::string _ip;
         std::string _port;
+        bool _running;
+        std::vector<std::string> _data;
+        std::vector<std::string> _msg;
     };
 }  // namespace client
