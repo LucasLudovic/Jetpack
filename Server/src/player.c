@@ -19,8 +19,13 @@ player_t *create_player(struct pollfd *socket)
         fprintf(stderr, "Unable to alloc player");
         return NULL;
     }
+    player->time_last_ask.tv_nsec = 0;
+    player->time_last_ask.tv_sec = 0;
+    player->ended = FALSE;
     player->is_alive = TRUE;
     player->score = 0;
     player->socket = socket;
+    player->position.x = 0;
+    player->position.y = 0;
     return player;
 }
