@@ -8,13 +8,13 @@
 #include "cleanup.h"
 #include "my_macros.h"
 #include "server.h"
+#include <map.h>
 #include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
-#include <map.h>
 
 static void bind_server(server_t *server)
 {
@@ -77,6 +77,33 @@ static void send_message(player_t *player, const char *msg)
     write(player->socket->fd, endl, strlen(endl));
 }
 
+static void remove_player(server_t *server, size_t i)
+{
+    free_player(&(server->players[i - 1]));
+    server->nb_player -= 1;
+    for (size_t j = i - 1; j < NB_PLAYER_MAX - 1; j += 1) {
+        server->players[j] = server->players[j + 1];
+    }
+    server->players[server->nb_player] = NULL;
+}
+
+static void init_game(server_t *this)
+{
+    this->send_map(this);
+    this->game_state = INIT;
+}
+
+static void start_game(server_t *this)
+{
+    char msg[BUFFSIZE] = {0};
+
+    for (size_t i = 0; i < this->nb_player; i += 1) {
+        snprintf(msg, BUFFSIZE, "GAME_START:%zu", i);
+        this->send(this->players[i], msg);
+    }
+    this->game_state = STARTED;
+}
+
 static void init_server_methods(server_t *this)
 {
     this->run = run_server;
@@ -84,6 +111,9 @@ static void init_server_methods(server_t *this)
     this->destroy = free_server;
     this->send = send_message;
     this->send_map = send_map;
+    this->init_game = init_game;
+    this->start_game = start_game;
+    this->load_map = load_map;
 }
 
 static void init_server_attribut(
@@ -95,7 +125,7 @@ static void init_server_attribut(
     this->map_file = strdup(map);
     this->map_sent = FALSE;
     this->nb_player = 0;
-    this->game_start = FALSE;
+    this->game_state = WAITING_PLAYER;
 }
 
 server_t *create_server(int port, const char *map, int debug)
@@ -119,5 +149,6 @@ server_t *create_server(int port, const char *map, int debug)
     init_socket(server);
     bind_server(server);
     listen_to_server(server);
+    server->load_map(server);
     return server;
 }

@@ -32,7 +32,7 @@ static int refuse_connection(server_t *server, struct pollfd *pfds)
 {
     const char msg[] = "Too many players, unable to accept connection\r\n";
 
-    if (server->nb_player == NB_PLAYER_MAX){
+    if (server->nb_player == NB_PLAYER_MAX) {
         write(pfds->fd, msg, strlen(msg));
         close(pfds->fd);
         return TRUE;
@@ -43,7 +43,7 @@ static int refuse_connection(server_t *server, struct pollfd *pfds)
 static void accept_connection(server_t *server)
 {
     struct pollfd *pfds = NULL;
-    const char msg[] = "220 Connection established.\r\n";
+    const char msg[] = "WAITING_PLAYERS\r\n";
 
     pfds = malloc(sizeof(struct pollfd));
     if (!pfds) {
@@ -65,16 +65,6 @@ static void accept_connection(server_t *server)
     write(pfds->fd, msg, strlen(msg));
 }
 
-void remove_player(server_t *server, size_t i)
-{
-    free_player(&(server->players[i - 1]));
-    server->nb_player -= 1;
-    for (size_t j = i - 1; j < NB_PLAYER_MAX - 1; j += 1) {
-        server->players[j] = server->players[j + 1];
-    }
-    server->players[server->nb_player] = NULL;
-}
-
 static int check_remove_socket(
     server_t *server, struct pollfd *pfds, const size_t i)
 {
@@ -84,7 +74,7 @@ static int check_remove_socket(
             server->is_running = FALSE;
             return TRUE;
         }
-        remove_player(server, i);
+        server->remove_player(server, i);
         return TRUE;
     }
     return FALSE;
@@ -142,6 +132,10 @@ static void loop_server(server_t *server)
     ret = poll(players_pfds, server->nb_player + 1, -1);
     if (ret > 0) {
         loop_poll(players_pfds, server);
+    }
+    if (server->nb_player == NB_PLAYER_MAX &&
+        server->game_state == WAITING_PLAYER) {
+        server->init_game(server);
     }
     free(players_pfds);
 }
