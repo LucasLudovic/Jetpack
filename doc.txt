@@ -89,7 +89,7 @@ Table of Contents
             `NEW_POS:$POSX:$POSY:$COLL`
             `SCORE:$PLAYER:$SCORE:$COLL`
         Client:
-            `PRESS`
+            `PRESSED`
 
     PIECE:
         SERVER:

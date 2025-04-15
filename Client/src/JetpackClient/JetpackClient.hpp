@@ -18,6 +18,18 @@ namespace client {
 
     class JetpackClient {
        public:
+        class ClientError : public std::exception {
+           public:
+            ClientError(const std::string &msg) { this->_msg = msg; }
+
+            const char *what() const noexcept override
+            {
+                return this->_msg.c_str();
+            }
+
+           private:
+            std::string _msg;
+        };
         JetpackClient(const std::string &ip, const std::string &port);
         ~JetpackClient();
 
@@ -33,11 +45,14 @@ namespace client {
         std::mutex data_mutex;
         client::Network _network;
 
+        void setupGame();
+
+        void runNetworkThread();
+        void runDisplayThread();
+
         void retrieveDataServer();
         void handleDisplay();
 
         void handleWaitingPlayers();
-        void runNetworkThread();
-        void runDisplayThread();
     };
 }  // namespace client
