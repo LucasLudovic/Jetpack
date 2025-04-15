@@ -6,6 +6,7 @@
 //
 
 #include "JetpackClient.hpp"
+#include <iostream>
 
 void client::JetpackClient::runNetworkThread()
 {
@@ -14,6 +15,7 @@ void client::JetpackClient::runNetworkThread()
 
         if (!data.empty()) {
             std::lock_guard<std::mutex> lock(this->data_mutex);
+            std::cout << data;
             this->_data.push(data);
         }
     }

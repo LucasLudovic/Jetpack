@@ -9,10 +9,8 @@
 #include "Network/Network.hpp"
 #include "client.hpp"
 #include <cstdint>
-#include <functional>
+#include <cstring>
 #include <iostream>
-#include <map>
-#include <mutex>
 #include <string>
 #include <thread>
 
@@ -24,9 +22,26 @@ client::JetpackClient::JetpackClient(
 
 client::JetpackClient::~JetpackClient() {}
 
+void client::JetpackClient::setupGame()
+{
+    auto cmd = this->_network.retrieveServerInformation();
+    if (cmd == "WAITING_PLAYERS\r\n") {
+        this->_state = CLIENT_STATE::WAITING;
+    } else {
+        throw ClientError(
+            "Server must send Waiting players like first message");
+    }
+    auto isMap = this->_network.retrieveServerInformation();
+    if (isMap == "SEND_MAP\r\n") {
+        // retrieve map
+    }
+}
+
 std::uint8_t client::JetpackClient::runClient()
 {
     this->_running = true;
+
+    this->setupGame();
 
     std::thread networkThread(&JetpackClient::runNetworkThread, this);
     std::thread displayThread(&JetpackClient::runDisplayThread, this);
