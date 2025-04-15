@@ -104,7 +104,8 @@ static void start_game(server_t *this)
     this->game_state = STARTED;
 }
 
-static void init_server_methods(server_t *this)
+static void init_server_attribut(
+    server_t *this, int port, const char *map, int debug)
 {
     this->run = run_server;
     this->remove_player = remove_player;
@@ -114,11 +115,6 @@ static void init_server_methods(server_t *this)
     this->init_game = init_game;
     this->start_game = start_game;
     this->load_map = load_map;
-}
-
-static void init_server_attribut(
-    server_t *this, int port, const char *map, int debug)
-{
     this->is_running = TRUE;
     this->is_debug = debug;
     this->port = port;
@@ -142,7 +138,6 @@ server_t *create_server(int port, const char *map, int debug)
     }
     for (size_t i = 0; i < NB_PLAYER_MAX; i += 1)
         server->players[i] = NULL;
-    init_server_methods(server);
     init_server_attribut(server, port, map, debug);
     init_address(server, port);
     server->socklen = sizeof(*server->address);
