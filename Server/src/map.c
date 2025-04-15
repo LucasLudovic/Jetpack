@@ -26,6 +26,11 @@ static void send_map_line(server_t *server, size_t i)
             server->destroy(&server);
             exit(EXIT_FAILURE);
         }
+        if (send(server->players[j]->socket->fd, "\n", 1, 0) < 0) {
+            fprintf(stderr, "Unable to send map\n");
+            server->destroy(&server);
+            exit(EXIT_FAILURE);
+        }
     }
 }
 
