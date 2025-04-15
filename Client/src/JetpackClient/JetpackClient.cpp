@@ -29,7 +29,7 @@ void client::JetpackClient::setupGame()
         this->_state = CLIENT_STATE::WAITING;
     } else {
         throw ClientError(
-            "Server must send Waiting players like first message");
+            "Server must send Waiting players as first message");
     }
     auto isMap = this->_network.retrieveServerInformation();
     if (isMap == "SEND_MAP\r\n") {
