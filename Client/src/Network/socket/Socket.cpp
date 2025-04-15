@@ -14,7 +14,9 @@
 #include <memory>
 #include <netinet/in.h>
 #include <string>
+#include <unistd.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 
 client::Socket::Socket(const std::string &ip, const std::string &port)
 {
@@ -48,8 +50,20 @@ void client::Socket::sendInput(const std::string &msg) const
 std::string client::Socket::getServerInformation() const
 {
     char buf[256];
+    std::string str;
+    ssize_t bytes_read = 0;
 
-    if (recv(this->_socket, buf, 256, 0) == -1)
-        throw SocketError("Recv Failed");
-    return buf;
+    while (true) {
+        bytes_read = read(this->_socket, buf, sizeof(buf));
+        if (bytes_read < 0)
+            break;
+        if (bytes_read == 0) {
+            close(this->_socket);
+            break;
+        }
+        str.append(buf, bytes_read);
+        if (bytes_read < 256)
+            break;
+    }
+    return str;
 }
