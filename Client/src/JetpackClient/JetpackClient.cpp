@@ -9,6 +9,7 @@
 #include "Network/Network.hpp"
 #include "client.hpp"
 #include <cstdint>
+#include <functional>
 #include <iostream>
 #include <map>
 #include <mutex>
@@ -54,10 +55,9 @@ void client::JetpackClient::handleWaitingPlayers()
 
 void client::JetpackClient::handleDisplay()
 {
-    using pfunc = void (client::JetpackClient::*)();
-    std::map<std::string, pfunc> instructions {
-        {"WAITING_PLAYERS", &client::JetpackClient::handleWaitingPlayers},
-        {"220 Connection established.\r\n", &client::JetpackClient::handleWaitingPlayers}
+    std::map<std::string, std::function<void()>> instructions {
+        {"WAITING_PLAYERS", [this] { handleWaitingPlayers(); }},
+        {"220 Connection established.\r\n", [this] { handleWaitingPlayers(); }}
     };
     
     std::lock_guard<std::mutex> lock(this->data_mutex);
@@ -68,7 +68,7 @@ void client::JetpackClient::handleDisplay()
     std::string currentData = this->_data.front();
     for (const auto &it : instructions) {
         if (currentData == it.first) {
-            (this->*it.second)();
+            it.second();
             this->_data.pop();
             break;
         }
@@ -80,7 +80,6 @@ std::uint8_t client::JetpackClient::runClient()
     this->_running = true;
 
     std::thread networkThread(&JetpackClient::runNetworkThread, this);
-    
     std::thread displayThread(&JetpackClient::runDisplayThread, this);
     
     networkThread.join();
