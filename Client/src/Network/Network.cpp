@@ -7,6 +7,7 @@
 
 #include "Network.hpp"
 #include "Inputs/Inputs.hpp"
+#include "JetpackClient/Poll/Poll.hpp"
 #include "Network/socket/Socket.hpp"
 #include <cstdlib>
 #include <iostream>
@@ -18,6 +19,8 @@ client::Network::Network(const std::string &ip, const std::string &port)
 {
     this->_socket = std::make_unique<client::Socket>(ip, port);
     this->_socket->createConnection();
+
+    this->_poll = std::make_unique<client::Poll>(this->_socket->getSocket());
 }
 
 client::Network::~Network() {}
@@ -29,13 +32,11 @@ void client::Network::sendInputToServer(const std::string &msg) const
 
 std::string client::Network::retrieveServerInformation() const
 {
-    struct pollfd *pfds = (struct pollfd *)malloc(sizeof(struct pollfd));
-    pfds[0].fd = this->_socket->getSocket();
-    pfds[0].events = POLLIN;
-    int rc = poll(pfds, 1, 33);
+    std::string msg;
+
+    int rc = this->_poll->triggerPoll(33);
     if (rc > 0) {
-        std::string msg = this->_socket->getServerInformation();
+        msg = this->_socket->getServerInformation();
     }
-    this->sendInputToServer(ok);
     return msg;
 }

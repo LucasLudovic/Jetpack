@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Inputs/Inputs.hpp"
+#include "JetpackClient/Poll/Poll.hpp"
 #include "Network/socket/Socket.hpp"
 #include <memory>
 #include <string>
@@ -22,5 +23,6 @@ namespace client {
         std::string retrieveServerInformation() const;
        private:
         std::unique_ptr<client::Socket> _socket;
+        std::unique_ptr<client::Poll> _poll;
     };
 }  // namespace client
