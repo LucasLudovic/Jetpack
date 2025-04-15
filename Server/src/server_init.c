@@ -15,6 +15,7 @@
 #include <string.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
+#include <time.h>
 
 static void bind_server(server_t *server)
 {
@@ -102,6 +103,9 @@ static void start_game(server_t *this)
         this->send(this->players[i], msg);
     }
     this->game_state = STARTED;
+    for (size_t i = 0; i < this->nb_player; i += 1) {
+        clock_gettime(CLOCK_MONOTONIC, &this->players[i]->time_last_ask);
+    }
 }
 
 static void init_server_attribut(

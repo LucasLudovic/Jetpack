@@ -12,9 +12,17 @@
     #include <stdint.h>
     #include <stddef.h>
 
+typedef struct vector2i_s {
+    double x;
+    double y;
+} vector2i_t;
+
 typedef struct player_s {
     size_t score;
+    int ended;
     uint8_t is_alive;
+    vector2i_t position;
+    struct timespec time_last_ask;
 
     struct pollfd *socket;
 } player_t;

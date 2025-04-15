@@ -136,6 +136,7 @@ static void loop_server(server_t *server)
     if (server->nb_player == NB_PLAYER_MAX &&
         server->game_state == WAITING_PLAYER) {
         server->init_game(server);
+        server->start_game(server);
     }
     free(players_pfds);
 }
