@@ -10,10 +10,14 @@
 #include <sys/poll.h>
 #include <sys/socket.h>
 
-client::Poll::Poll()
+client::Poll::Poll(int fd)
 {
-    struct pollfd fd;
-    int sockt = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockt == -1)
-        throw PollError("Socket Failed");
+    this->_pfds = std::make_unique<struct pollfd>();
+    this->_pfds->fd = fd;
+    this->_pfds->events = POLLIN;
+}
+
+int client::Poll::triggerPoll(int timeout)
+{
+    return poll(this->_pfds.get(), 1, timeout);
 }

@@ -28,13 +28,11 @@ namespace client {
             std::string _msg;
         };
 
-        Poll();
-        void makePoll();
-        ~Poll();
+        Poll(int fd);
+        ~Poll() = default;
+        int triggerPoll(int timeout);
 
        private:
-        std::vector<struct pollfd> _fds;
-        nfds_t _nfds;
-        std::unique_ptr<struct sockaddr_in> _address;
+        std::unique_ptr<struct pollfd> _pfds;
     };
 }  // namespace client
