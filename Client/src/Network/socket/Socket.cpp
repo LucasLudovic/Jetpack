@@ -47,6 +47,11 @@ void client::Socket::sendInput(const std::string &msg) const
     }
 }
 
+int client::Socket::getSocket() const
+{
+    return this->_socket;
+}
+
 std::string client::Socket::getServerInformation() const
 {
     char buf[256];
