@@ -19,6 +19,7 @@
 
 static void store_player(server_t *server, struct pollfd *pfds)
 {
+    pfds->events = POLLIN;
     server->players[server->nb_player] = create_player(pfds);
     if (server->players[server->nb_player] == NULL) {
         fprintf(stderr, "Unable to create player");
@@ -60,7 +61,6 @@ static void accept_connection(server_t *server)
     }
     if (refuse_connection(server, pfds) == TRUE)
         return;
-    pfds->events = POLLIN;
     store_player(server, pfds);
     write(pfds->fd, msg, strlen(msg));
 }
