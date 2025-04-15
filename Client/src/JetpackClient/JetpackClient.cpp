@@ -18,62 +18,11 @@
 
 client::JetpackClient::JetpackClient(
     const std::string &ip, const std::string &port)
-    : _ip(ip), _port(port), _running(true), _network(ip, port)
+    : _ip(ip), _port(port), _running(true), _network(ip, port),
+      _state(CLIENT_STATE::UNDEFIDED)
 {}
 
 client::JetpackClient::~JetpackClient() {}
-
-void client::JetpackClient::runNetworkThread()
-{
-    while (this->_running) {
-        std::cout << "SERVER\n";
-        auto data = this->_network.retrieveServerInformation();
-        
-        if (!data.empty()) {
-            std::lock_guard<std::mutex> lock(this->data_mutex);
-            this->_data.push(data);
-        }
-        std::cout << "SERVER2\n";
-    }
-}
-
-void client::JetpackClient::runDisplayThread()
-{
-    while (this->_running) {
-        std::cout << "Client\n";
-        this->handleDisplay();
-        std::cout << "Client2\n";
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    }
-}
-
-
-void client::JetpackClient::handleWaitingPlayers()
-{
-    std::cout << "Waiting Player\n";
-}
-
-void client::JetpackClient::handleDisplay()
-{
-    std::map<std::string, std::function<void()>> instructions {
-        {"WAITING_PLAYERS", [this] { handleWaitingPlayers(); }},
-        {"220 Connection established.\r\n", [this] { handleWaitingPlayers(); }}
-    };
-    
-    std::lock_guard<std::mutex> lock(this->data_mutex);
-    if (this->_data.empty()) {
-        return;
-    }
-    
-    std::string currentData = this->_data.front();
-    for (const auto &it : instructions) {
-        if (currentData == it.first) {
-            it.second();
-            this->_data.pop();
-            break;
-        }
-    }
-}
 
 std::uint8_t client::JetpackClient::runClient()
 {
@@ -81,9 +30,9 @@ std::uint8_t client::JetpackClient::runClient()
 
     std::thread networkThread(&JetpackClient::runNetworkThread, this);
     std::thread displayThread(&JetpackClient::runDisplayThread, this);
-    
+
     networkThread.join();
     displayThread.join();
-    
+
     return RET_SUCCESS;
 }
