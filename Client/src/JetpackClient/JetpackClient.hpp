@@ -14,6 +14,8 @@
 #include <string>
 
 namespace client {
+    enum class CLIENT_STATE : std::uint8_t { UNDEFIDED, PLAYING, WAITING };
+
     class JetpackClient {
        public:
         JetpackClient(const std::string &ip, const std::string &port);
@@ -25,6 +27,7 @@ namespace client {
         std::string _ip;
         std::string _port;
         bool _running;
+        CLIENT_STATE _state;
         std::queue<std::string> _data;
         std::queue<std::string> _msg;
         std::mutex data_mutex;
