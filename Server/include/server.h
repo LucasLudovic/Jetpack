@@ -8,18 +8,26 @@
 #ifndef SERVER_H_
     #define SERVER_H_
 
+    #include "map.h"
     #include "player.h"
     #include <stddef.h>
     #include <unistd.h>
 
     #define NB_PLAYER_MAX 2
 
+enum GameState {
+    WAITING_PLAYER,
+    INIT,
+    STARTED
+};
+
 typedef struct server_s {
     int is_debug;
     int is_running;
-    int game_start;
     int map_sent;
     char *map_file;
+    char *map[MAP_HEIGHT];
+    enum GameState game_state;
 
     struct pollfd *socket;
     struct sockaddr_in *address;
@@ -34,11 +42,13 @@ typedef struct server_s {
     void (*send)(player_t *player, const char *msg);
     void (*send_map)(struct server_s *server);
     void (*remove_player)(struct server_s *server, size_t i);
+    void (*init_game)(struct server_s *server);
+    void (*start_game)(struct server_s *server);
+    void (*load_map)(struct server_s *server);
 } server_t;
 
 server_t *create_server(int port, const char *map, int debug);
 int run_server(struct server_s *this);
-void remove_player(server_t *server, size_t i);
-
+void send_map(server_t *server);
 
 #endif /* ifndef SERVER_H_ */
