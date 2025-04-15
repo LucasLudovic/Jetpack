@@ -22,6 +22,7 @@ const command_t commands[] = {
 void move_up(server_t *server, player_t *player)
 {
     char buff[BUFFSIZE];
+    vector2_t last_position;
     struct timespec current_time = {0};
     long time_since_last_ask = 0;
 
@@ -37,15 +38,24 @@ void move_up(server_t *server, player_t *player)
         return;
     }
 
+    last_position.x = player->position.x;
+    last_position.y = player->position.y;
+
     player->position.y += 0.1 * time_since_last_ask;
     player->position.x += 0.1 * time_since_last_ask;
 
-    if (player->position.y >= MAP_HEIGHT - 1) {
+    if (player->position.y > MAP_HEIGHT - 1) {
         player->position.y = MAP_HEIGHT - 1;
     }
-    if (player->position.x >= strlen(server->map[0])) {
+    if (player->position.x > strlen(server->map[0]) - 1) {
         player->position.x = strlen(server->map[0]) - 1;
         player->ended = TRUE;
+    }
+    if (server->map[(size_t)player->position.y][(size_t)player->position.x] ==
+            'c' &&
+        (size_t)last_position.x != (size_t)player->position.x &&
+        (size_t)last_position.y != (size_t)player->position.y) {
+        player->score += 1;
     }
     player->time_last_ask = current_time;
     snprintf(buff, BUFFSIZE, "position:x=%f:y%f\n", player->position.x,
@@ -57,6 +67,7 @@ void send_pos(server_t *server, player_t *player)
 {
     char buff[BUFFSIZE];
     struct timespec current_time = {0};
+    vector2_t last_position;
     long time_since_last_ask = 0;
 
     clock_gettime(CLOCK_MONOTONIC, &current_time);
@@ -70,17 +81,27 @@ void send_pos(server_t *server, player_t *player)
         send(player->socket->fd, "GAME_END", strlen("GAME_END"), 0);
         return;
     }
+    last_position.x = player->position.x;
+    last_position.y = player->position.y;
+
     player->position.y -= 0.05 * time_since_last_ask;
     player->position.x += 0.1 * time_since_last_ask;
+
 
     if (player->position.y < 0)
         player->position.y = 0;
     if (player->position.y >= MAP_HEIGHT - 1) {
         player->position.y = MAP_HEIGHT - 1;
     }
-    if (player->position.x >= strlen(server->map[0])) {
+    if (player->position.x > strlen(server->map[0]) - 1) {
         player->position.x = strlen(server->map[0]) - 1;
         player->ended = TRUE;
+    }
+    if (server->map[(size_t)player->position.y][(size_t)player->position.x] ==
+            'c' &&
+        (size_t)last_position.x != (size_t)player->position.x &&
+        (size_t)last_position.y != (size_t)player->position.y) {
+        player->score += 1;
     }
     player->time_last_ask = current_time;
     snprintf(buff, BUFFSIZE, "position:x=%f:y%f\n", player->position.x,
