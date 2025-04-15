@@ -7,10 +7,11 @@
 
 #pragma once
 
+#include "Network/Network.hpp"
 #include <cstdint>
-#include <string>
+#include <mutex>
 #include <queue>
-#include <vector>
+#include <string>
 
 namespace client {
     class JetpackClient {
@@ -24,7 +25,16 @@ namespace client {
         std::string _ip;
         std::string _port;
         bool _running;
-        std::vector<std::string> _data;
-        std::vector<std::string> _msg;
+        std::queue<std::string> _data;
+        std::queue<std::string> _msg;
+        std::mutex data_mutex;
+        client::Network _network;
+
+        void retrieveDataServer();
+        void handleDisplay();
+
+        void handleWaitingPlayers();
+        void runNetworkThread();
+        void runDisplayThread();
     };
 }  // namespace client
