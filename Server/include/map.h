@@ -9,8 +9,8 @@
     #define MAP_H_
     #include <stddef.h>
 
-#define MAP_HEIGHT 10
-#define MAP_LENGTH_MAX 10000
+    #define MAP_HEIGHT 10
+    #define MAP_LENGTH_MAX 10000
 
 typedef struct server_s server_t;
 

@@ -5,3 +5,4 @@ jetpack_server
 *.o
 compile_commands.json
 .cache
+map/
