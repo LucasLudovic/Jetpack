@@ -7,8 +7,13 @@
 
 #ifndef MAP_H_
     #define MAP_H_
-    #include "server.h"
+    #include <stddef.h>
 
-void send_map(server_t *server);
+#define MAP_HEIGHT 10
+#define MAP_LENGTH_MAX 10000
+
+typedef struct server_s server_t;
+
+void load_map(server_t *server);
 
 #endif
