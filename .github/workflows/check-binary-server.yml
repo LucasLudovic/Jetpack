@@ -16,7 +16,10 @@ jobs:
           - name: Checkout Branch
             uses: actions/checkout@v4
           - name: Compile Repo
-            run:  make
+            run:  |
+              cd Server
+              make
+              cd ..
           - name: Check binary presence
             run: |
                 if [ ! -f ./${{ inputs.executable }} ]; then
