@@ -88,6 +88,5 @@ void client::JetpackClient::runDisplayThread()
 {
     while (this->_running) {
         this->handleDisplay();
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 }
