@@ -136,7 +136,6 @@ int execute_instructions(server_t *server, player_t *player, size_t i)
             return SUCCESS;
         }
     }
-    printf("Command: %s\n", buff);
     send(player->socket->fd, unknown, strlen(unknown), 0);
     return SUCCESS;
 }
