@@ -34,12 +34,10 @@ std::string client::Network::getCommand()
 {
     std::string command;
     size_t value = this->_cache.find("\r\n");
-    std::cout << "cache = " << this->_cache << '\n';
     if (value == std::string::npos)
         return "";
     command = this->_cache.substr(0, value);
     this->_cache.erase(0, value + 2);
-    std::cout << "NEW CMD\n";
     return command;
 }
 
