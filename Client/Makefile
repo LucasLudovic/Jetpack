@@ -13,7 +13,7 @@ SRC	+=	./src/JetpackClient/ThreadNetwork.cpp
 SRC	+=	./src/Network/Network.cpp
 SRC	+=	./src/Network/socket/Socket.cpp
 SRC	+=	./src/Display/Display.cpp
-SRC	+=	./src/JetpackClient/Poll/Poll.cpp
+SRC	+=	./src/Network/Poll/Poll.cpp
 
 OBJ	=	$(SRC:.cpp=.o)
 
