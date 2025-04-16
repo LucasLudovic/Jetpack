@@ -31,6 +31,7 @@ namespace client {
            private:
             std::string _msg;
         };
+
         JetpackClient(const std::string &ip, const std::string &port);
         ~JetpackClient();
 
@@ -45,9 +46,8 @@ namespace client {
         std::queue<std::string> _msg;
         std::mutex data_mutex;
         client::Network _network;
+        bool _retrieveMap;
         std::vector<std::string> _map;
-
-        void setupGame();
 
         void runNetworkThread();
         void runDisplayThread();
@@ -56,6 +56,8 @@ namespace client {
         void handleDisplay();
 
         void handleWaitingPlayers();
-        void retrieveMap();
+        void startMap();
+        void retrieveMap(const std::string &map);
+        void endMap();
     };
 }  // namespace client
