@@ -32,8 +32,6 @@ void client::JetpackClient::retrieveMap(const std::string &map)
     if (map.empty())
         throw ClientError("Map was not send");
 
-    value = map.find('\n');
-
     while ((value = map.find('\n', starting)) != std::string::npos) {
         this->_map.push_back(map.substr(starting, value - starting));
         starting = value + 1;
