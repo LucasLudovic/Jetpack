@@ -17,7 +17,7 @@
 client::JetpackClient::JetpackClient(
     const std::string &ip, const std::string &port)
     : _ip(ip), _port(port), _running(true), _network(ip, port),
-      _state(CLIENT_STATE::UNDEFIDED)
+      _state(CLIENT_STATE::UNDEFIDED), _retrieveMap(false)
 {}
 
 client::JetpackClient::~JetpackClient() {}
