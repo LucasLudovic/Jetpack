@@ -17,11 +17,43 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-static void send_map_line(server_t *server, size_t i)
+static void send_end_map(
+    server_t *server, size_t player_index, size_t line_index)
 {
     const char endl[] = "\r\n";
+    const char end_map[] = "END_MAP\r\n";
 
+    if (line_index == MAP_HEIGHT - 1) {
+        if (send(server->players[player_index]->socket->fd, endl, strlen(endl),
+                0) < 0) {
+            fprintf(stderr, "Unable to send \"\\r\\n\" for map\n");
+            server->destroy(&server);
+            exit(EXIT_FAILURE);
+        }
+        if (send(server->players[player_index]->socket->fd, end_map,
+                strlen(end_map), 0) < 0) {
+            fprintf(stderr, "Unable to send end_map\n");
+            server->destroy(&server);
+            exit(EXIT_FAILURE);
+        }
+    }
+}
+
+static void send_start_map(
+    server_t *server, size_t player_index, size_t line_index)
+{
+    const char start_map[] = "START_MAP\r\n";
+
+    if (line_index == 0) {
+        send(server->players[player_index]->socket->fd, start_map,
+            strlen(start_map), 0);
+    }
+}
+
+static void send_map_line(server_t *server, size_t i)
+{
     for (size_t j = 0; j < server->nb_player; j += 1) {
+        send_start_map(server, j, i);
         if (send(server->players[j]->socket->fd, server->map[i],
                 strlen(server->map[i]), 0) < 0) {
             fprintf(stderr, "Unable to send map\n");
@@ -33,9 +65,7 @@ static void send_map_line(server_t *server, size_t i)
             server->destroy(&server);
             exit(EXIT_FAILURE);
         }
-        if (i == MAP_HEIGHT - 1) {
-            send(server->players[j]->socket->fd, endl, strlen(endl), 0);
-        }
+        send_end_map(server, j, i);
     }
 }
 
