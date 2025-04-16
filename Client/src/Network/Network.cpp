@@ -6,14 +6,14 @@
 //
 
 #include "Network.hpp"
-#include "Inputs/Inputs.hpp"
-#include "JetpackClient/Poll/Poll.hpp"
 #include "Network/socket/Socket.hpp"
+#include "Poll/Poll.hpp"
 #include <cstdlib>
-#include <iostream>
 #include <memory>
 #include <string>
 #include <sys/poll.h>
+#include <sys/types.h>
+#include <iostream>
 
 client::Network::Network(const std::string &ip, const std::string &port)
 {
@@ -30,7 +30,20 @@ void client::Network::sendInputToServer(const std::string &msg) const
     this->_socket->sendInput(msg);
 }
 
-std::string client::Network::retrieveServerInformation() const
+std::string client::Network::getCommand()
+{
+    std::string command;
+    size_t value = this->_cache.find("\r\n");
+    std::cout << "cache = " << this->_cache << '\n';
+    if (value == std::string::npos)
+        return "";
+    command = this->_cache.substr(0, value);
+    this->_cache.erase(0, value + 2);
+    std::cout << "NEW CMD\n";
+    return command;
+}
+
+void client::Network::retrieveServerInformation()
 {
     std::string msg;
 
@@ -38,5 +51,5 @@ std::string client::Network::retrieveServerInformation() const
     if (rc > 0) {
         msg = this->_socket->getServerInformation();
     }
-    return msg;
+    this->_cache.append(msg);
 }
