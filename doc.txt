@@ -77,6 +77,28 @@ Table of Contents
         maintain a synchronized session. It will include the message
         formats, handshake process, error handling, and timing considerations.
 
+    --> is Server to Client
+    <-- is Client to Server
+
+
+    (Connection State)
+    --> WAITING_PLAYERS : You are connected but we still need to wait for other players
+
+    (Init state)
+    --> SEND_MAP: All players are connected, about to send the map
+    --> "-----C----xxx\n"
+        "----CC-------\n\r\n": map with this format
+    --> "MAP_SENT": map sent, about to start the game
+    <-- READY: when the player is ready to start the game
+    --> GAME_START: when all player are ready and thus beginning the game
+
+    (Game State) The client command can be send in any order and the response will always be the pos + score
+    <-- PRESSED: When the player press the touch to use the jetpack
+    <-- GETPOS: When the player doesn't press the touch to use the jetpack
+    --> "$(xPos):$(yPos):$(scoreP1):$(scoreP2)": pos and score
+    --> ENDGAME: when the game is over
+
+
     ALL:
         SERVER:
             `WAITING_PLAYERS`
