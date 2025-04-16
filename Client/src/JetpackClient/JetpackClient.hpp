@@ -12,6 +12,7 @@
 #include <mutex>
 #include <queue>
 #include <string>
+#include <vector>
 
 namespace client {
     enum class CLIENT_STATE : std::uint8_t { UNDEFIDED, PLAYING, WAITING };
@@ -44,6 +45,7 @@ namespace client {
         std::queue<std::string> _msg;
         std::mutex data_mutex;
         client::Network _network;
+        std::vector<std::string> _map;
 
         void setupGame();
 
@@ -54,5 +56,6 @@ namespace client {
         void handleDisplay();
 
         void handleWaitingPlayers();
+        void retrieveMap();
     };
 }  // namespace client
