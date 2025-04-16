@@ -19,6 +19,8 @@
 
 static void send_map_line(server_t *server, size_t i)
 {
+    const char endl[] = "\r\n";
+
     for (size_t j = 0; j < server->nb_player; j += 1) {
         if (send(server->players[j]->socket->fd, server->map[i],
                 strlen(server->map[i]), 0) < 0) {
@@ -30,6 +32,9 @@ static void send_map_line(server_t *server, size_t i)
             fprintf(stderr, "Unable to send map\n");
             server->destroy(&server);
             exit(EXIT_FAILURE);
+        }
+        if (i == MAP_HEIGHT - 1) {
+            send(server->players[j]->socket->fd, endl, strlen(endl), 0);
         }
     }
 }
