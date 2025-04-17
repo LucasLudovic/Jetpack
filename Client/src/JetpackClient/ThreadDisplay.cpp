@@ -107,7 +107,7 @@ void client::JetpackClient::handleDisplay()
         this->_displayEngine.renderFrame(this->_player, this->_map);
         this->_data.pop();
         if (this->_displayEngine.handleEvent())
-            this->_msg.push("PUSSHED");
+            this->_msg.push("PRESSED");
         return;
     }
     for (const auto &it : instructions) {

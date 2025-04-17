@@ -24,7 +24,6 @@ void client::JetpackClient::runNetworkThread()
         }
         if (this->_state == CLIENT_STATE::PLAYING) {
             if (!this->_msg.empty()) {
-                std::cout << "Pressed\n";
                 std::lock_guard<std::mutex> lock(this->data_mutex);
                 this->_network.sendInputToServer(this->_msg.front());
                 this->_msg.pop();
