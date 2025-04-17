@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include "Display/Display.hpp"
 #include "Network/Network.hpp"
+#include "Player/Player.hpp"
 #include <cstdint>
 #include <mutex>
 #include <queue>
@@ -46,6 +48,8 @@ namespace client {
         std::queue<std::string> _msg;
         std::mutex data_mutex;
         client::Network _network;
+        client::Display _displayEngine;
+        Player _player;
         bool _retrieveMap;
         std::vector<std::string> _map;
 
@@ -59,5 +63,6 @@ namespace client {
         void startMap();
         void retrieveMap(const std::string &map);
         void endMap();
+        void startGame();
     };
 }  // namespace client

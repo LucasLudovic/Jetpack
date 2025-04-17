@@ -7,10 +7,12 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <vector>
-#include <memory>
 #include "Inputs/Inputs.hpp"
+#include "Player/Player.hpp"
+#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <memory>
+#include <vector>
 
 namespace client {
     class Display {
@@ -18,19 +20,17 @@ namespace client {
         Display();
         ~Display();
 
-        void drawEntity(const std::string &texturePath, float posx, float posy, float scalex, float scaley);
-
-        void drawText(const std::string &str, float posx, float posy);
-
-        std::vector<Inputs> &getEvents();
-
-        void render();
-
-        void clear();
+        void renderFrame(
+            const Player &player, const std::vector<std::string> &map);
 
        private:
         std::unique_ptr<sf::RenderWindow> _window = nullptr;
         std::unique_ptr<sf::Font> _font = nullptr;
         std::vector<client::Inputs> _events;
+
+        sf::Sprite _player;
+        sf::Sprite _coin;
+        sf::Sprite _laser;
+        void _loadAssets();
     };
 }  // namespace client
