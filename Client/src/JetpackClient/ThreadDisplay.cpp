@@ -6,6 +6,7 @@
 //
 
 #include "JetpackClient.hpp"
+#include "client.hpp"
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
@@ -57,7 +58,7 @@ void client::JetpackClient::startGame()
     this->_state = CLIENT_STATE::PLAYING;
 }
 
-void client::JetpackClient::_updatePlayerPosition(std::string pos)
+void client::JetpackClient::_updatePlayerPosition(const std::string &pos)
 {
     if (pos.find("position:") != std::string::npos) {
         size_t value = pos.find(":x=");
@@ -136,8 +137,12 @@ void client::JetpackClient::handleDisplay()
 
 void client::JetpackClient::runDisplayThread()
 {
-    this->_displayEngine.activateWindow();
-    while (this->_running) {
-        this->handleDisplay();
+    try {
+        this->_displayEngine.activateWindow();
+        while (this->_running) {
+            this->handleDisplay();
+        }
+    } catch (...) {
+        exit (RET_FAILURE);
     }
 }

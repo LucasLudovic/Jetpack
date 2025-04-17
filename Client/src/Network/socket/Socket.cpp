@@ -6,17 +6,15 @@
 //
 
 #include "Socket.hpp"
-#include "Inputs/Inputs.hpp"
 #include <arpa/inet.h>
 #include <cstdlib>
 #include <cstring>
-#include <iostream>
 #include <memory>
 #include <netinet/in.h>
 #include <string>
-#include <unistd.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 client::Socket::Socket(const std::string &ip, const std::string &port)
 {
@@ -64,7 +62,7 @@ std::string client::Socket::getServerInformation() const
             break;
         if (bytes_read == 0) {
             close(this->_socket);
-            break;
+            throw SocketError("Server disconected");
         }
         str.append(buf, bytes_read);
         if (bytes_read < 256)
