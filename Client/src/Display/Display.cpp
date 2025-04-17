@@ -6,33 +6,28 @@
 //
 
 #include "Display.hpp"
-#include "Inputs/Inputs.hpp"
+#include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Window.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/VideoMode.hpp>
-#include <exception>
+#include <SFML/Window/WindowStyle.hpp>
 #include <iostream>
-#include <map>
 #include <memory>
-
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
 #include <vector>
 
 client::Display::Display()
 {
     std::cout << "Init display" << std::endl;
     this->_window =
-        std::make_unique<sf::RenderWindow>(sf::VideoMode({900, 900}), "");
+        std::make_unique<sf::RenderWindow>(sf::VideoMode({1920, 1080}), "");
     if (!this->_window)
         throw DisplayError("Unable to render a window");
-
-    this->_window->setActive(true);
     this->_loadAssets();
 }
 
@@ -53,6 +48,24 @@ void client::Display::deactivateWindow()
     this->_window->setActive(false);
 }
 
+bool client::Display::handleEvent()
+{
+    sf::Event sfmlEvent;
+    bool Event;
+
+    while (this->_window->pollEvent(sfmlEvent)) {
+        switch (sfmlEvent.type) {
+            case sf::Event::KeyPressed: {
+                Event = true;
+                break;
+            }
+            default:
+                break;
+        }
+    }
+    return Event;
+}
+
 void client::Display::_loadAssets()
 {
     std::cout << "Loading assets" << std::endl;
@@ -62,10 +75,19 @@ void client::Display::_loadAssets()
     if (this->_font == nullptr)
         throw DisplayError("Can't load the font");
 
+    this->_loadBackgroundAsset();
     this->_loadCoinAssets();
     this->_loadPlayerAssets();
     this->_loadLaserAssets();
     std::cout << "Done loading assets" << std::endl;
+}
+
+void client::Display::_loadBackgroundAsset()
+{
+    if (!this->_backgroundTexture.loadFromFile("assets/background.png")) {
+        throw DisplayError("Unable to load backgroundTexture");
+    }
+    this->_backgroundSprite.setTexture(this->_backgroundTexture);
 }
 
 void client::Display::_loadCoinAssets()
@@ -88,24 +110,6 @@ void client::Display::_loadCoinAssets()
         coinSprite->setTextureRect(rect);
         this->_coin.push_back(std::move(coinSprite));
     }
-}
-
-bool client::Display::handleEvent()
-{
-    sf::Event sfmlEvent;
-    bool Event;
-
-    while (this->_window->pollEvent(sfmlEvent)) {
-        switch (sfmlEvent.type) {
-            case sf::Event::KeyPressed: {
-                Event = true;
-                break;
-            }
-            default:
-                break;
-        }
-    }
-    return Event;
 }
 
 void client::Display::_loadLaserAssets()
@@ -195,11 +199,44 @@ void client::Display::renderFrame(
     const Player &player, const std::vector<std::string> &map)
 {
     this->_startX = player.getPosX();
-    this->_endX   = this->_startX + 10;
+    this->_endX = this->_startX + 10;
 
+    this->_window->clear();
+    this->_drawBackground();
     this->_drawProps(map);
     this->_drawPlayer(player, map);
     this->_window->display();
+}
+
+void client::Display::_drawBackground()
+{
+    sf::Transform t1;
+    sf::Transform t2;
+
+    const float windowWidth = this->_window->getSize().x;
+    const float windowHeight = this->_window->getSize().y;
+    const float scale = windowHeight / this->_backgroundTexture.getSize().y;
+
+    this->_backgroundSprite.setScale(scale, scale);
+
+    const float backgroundWidth = this->_backgroundTexture.getSize().x * scale;
+    const float tileW = windowWidth / (this->_endX - this->_startX - 1);
+
+    float offset = this->_startX * tileW;
+
+    while (offset >= backgroundWidth) {
+        offset -= backgroundWidth;
+    }
+    while (offset < 0) {
+        offset += backgroundWidth;
+    }
+
+    offset *= -1;
+    t1.translate(offset, 0);
+    t2.translate(offset + backgroundWidth, 0);
+
+    this->_window->draw(this->_backgroundSprite, t1);
+    this->_window->draw(this->_backgroundSprite, t2);
 }
 
 void client::Display::_drawProps(const std::vector<std::string> &map)
@@ -207,13 +244,12 @@ void client::Display::_drawProps(const std::vector<std::string> &map)
     static size_t frameCounter = 0;
 
     const float width = static_cast<float>(this->_window->getSize().x) /
-                             (this->_endX - this->_startX + 1);
+                        (this->_endX - this->_startX + 1);
     const float height = static_cast<float>(this->_window->getSize().y) /
-                               static_cast<float>(map.size());
+                         static_cast<float>(map.size());
     const size_t coinFrame = frameCounter % _coin.size();
     const size_t laserFrame = frameCounter % _laser.size();
 
-    this->_window->clear();
     for (size_t y = 0; y < map.size(); y += 1) {
         for (size_t x = this->_startX; x < this->_endX; x += 1) {
             char tile = map[y][x];
