@@ -103,8 +103,8 @@ void client::JetpackClient::handleDisplay()
     }
     std::string currentData = this->_data.front();
     if (this->_state == CLIENT_STATE::PLAYING) {
-        // this->_displayEngine.renderFrame(this->_player, this->_map);
         this->updatePlayerPosition(currentData);
+        this->_displayEngine.renderFrame(this->_player, this->_map);
         this->_data.pop();
         if (this->_displayEngine.handleEvent())
             this->_msg.push("PUSSHED");
@@ -126,6 +126,7 @@ void client::JetpackClient::handleDisplay()
 
 void client::JetpackClient::runDisplayThread()
 {
+    this->_displayEngine.activateWindow();
     while (this->_running) {
         this->handleDisplay();
     }

@@ -16,6 +16,7 @@
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <exception>
+#include <iostream>
 #include <map>
 #include <memory>
 
@@ -25,22 +26,36 @@
 
 client::Display::Display()
 {
+    std::cout << "Init display" << std::endl;
     this->_window =
         std::make_unique<sf::RenderWindow>(sf::VideoMode({900, 900}), "");
     if (!this->_window)
         throw DisplayError("Unable to render a window");
 
+    this->_window->setActive(true);
     this->_loadAssets();
 }
 
 client::Display::~Display()
 {
+    std::cout << "Destroy display" << std::endl;
     if (this->_window)
         this->_window->close();
 }
 
+void client::Display::activateWindow()
+{
+    this->_window->setActive(true);
+}
+
+void client::Display::deactivateWindow()
+{
+    this->_window->setActive(false);
+}
+
 void client::Display::_loadAssets()
 {
+    std::cout << "Loading assets" << std::endl;
     this->_font = std::make_unique<sf::Font>();
     this->_font->loadFromFile(
         "./assets/fonts/JetBrainsMonoNerdFont-Medium.ttf");
@@ -50,6 +65,7 @@ void client::Display::_loadAssets()
     this->_loadCoinAssets();
     this->_loadPlayerAssets();
     this->_loadLaserAssets();
+    std::cout << "Done loading assets" << std::endl;
 }
 
 void client::Display::_loadCoinAssets()
@@ -211,6 +227,7 @@ void client::Display::renderFrame(
     }
     frameCounter += 1;
     this->_drawPlayer(player, map);
+    this->_window->display();
 }
 
 void client::Display::_drawPlayer(
@@ -238,5 +255,12 @@ void client::Display::_drawPlayer(
     playerSprite->setScale(tileWidth / playerSprite->getLocalBounds().width,
         tileHeight / playerSprite->getLocalBounds().height);
     this->_window->draw(*playerSprite);
+
     frameCounter += 1;
+
+    if (player.getPosY() > 0) {
+        this->_playerFlight[flightFrame] = std::move(playerSprite);
+    } else {
+        this->_playerRun[runFrame] = std::move(playerSprite);
+    }
 }
