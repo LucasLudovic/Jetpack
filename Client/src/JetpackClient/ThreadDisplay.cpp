@@ -57,7 +57,7 @@ void client::JetpackClient::startGame()
     this->_state = CLIENT_STATE::PLAYING;
 }
 
-void client::JetpackClient::updatePlayerPosition(std::string pos)
+void client::JetpackClient::_updatePlayerPosition(std::string pos)
 {
     if (pos.find("position:") != std::string::npos) {
         size_t value = pos.find(":x=");
@@ -68,7 +68,16 @@ void client::JetpackClient::updatePlayerPosition(std::string pos)
         this->_player.setPosX(std::atof(posX.c_str()));
         this->_player.setPosY(std::atof(posY.c_str()));
     }
-    
+}
+
+void client::JetpackClient::_retrieveCoin()
+{
+    auto playerX = static_cast<int>(this->_player.getPosX());
+    auto playerY = static_cast<int>(this->_player.getPosY());
+
+    if (this->_map[9 - playerY][playerX] == 'c') {
+        this->_map[9 - playerY][playerX] = '_';
+    }
 }
 
 void client::JetpackClient::handleDisplay()
@@ -103,7 +112,8 @@ void client::JetpackClient::handleDisplay()
     }
     std::string currentData = this->_data.front();
     if (this->_state == CLIENT_STATE::PLAYING) {
-        this->updatePlayerPosition(currentData);
+        this->_updatePlayerPosition(currentData);
+        this->_retrieveCoin();
         this->_displayEngine.renderFrame(this->_player, this->_map);
         this->_data.pop();
         if (this->_displayEngine.handleEvent())
