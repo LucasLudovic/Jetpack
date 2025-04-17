@@ -26,6 +26,7 @@ client::JetpackClient::~JetpackClient() {}
 std::uint8_t client::JetpackClient::runClient()
 {
     this->_running = true;
+    this->_displayEngine.deactivateWindow();
 
     std::thread networkThread(&JetpackClient::runNetworkThread, this);
     std::thread displayThread(&JetpackClient::runDisplayThread, this);
