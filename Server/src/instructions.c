@@ -81,7 +81,7 @@ void move_up(server_t *server, player_t *player)
     clock_gettime(CLOCK_MONOTONIC, &current_time);
     time_since_last_ask = compute_last_time(player, &current_time);
     if (player->ended == TRUE) {
-        send(player->socket->fd, "GAME_END", strlen("GAME_END"), 0);
+        send(player->socket->fd, "GAME_END\r\n", strlen("GAME_END\r\n"), 0);
         return;
     }
     last_position.x = player->position.x;
@@ -104,7 +104,7 @@ void send_pos(server_t *server, player_t *player)
     clock_gettime(CLOCK_MONOTONIC, &current_time);
     time_since_last_ask = compute_last_time(player, &current_time);
     if (player->ended == TRUE) {
-        send(player->socket->fd, "GAME_END", strlen("GAME_END"), 0);
+        send(player->socket->fd, "GAME_END\r\n", strlen("GAME_END\r\n"), 0);
         return;
     }
     last_position.x = player->position.x;
