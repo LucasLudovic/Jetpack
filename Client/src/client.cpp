@@ -6,7 +6,9 @@
 //
 
 #include "client.hpp"
+#include "Display/Display.hpp"
 #include "JetpackClient/JetpackClient.hpp"
+#include "Network/socket/Socket.hpp"
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -54,10 +56,19 @@ uint8_t launchClient(const int argc, char const *argv[])
     if (argc < 5)
         return RET_FAILURE;
     std::string ip = retrieveIP(argv);
-    std::cout << "ip = " << ip << std::endl;
     std::string port = retrievePort(argv);
-    std::cout << "port = " << port << std::endl;
-    client::JetpackClient NewClient(ip, port);
-    NewClient.runClient();
+    try {
+        client::JetpackClient NewClient(ip, port);
+        NewClient.runClient();
+    } catch (client::Socket::SocketError &e) {
+        std::cerr << e.what() << '\n';
+        return RET_FAILURE;
+    } catch (client::JetpackClient::ClientError &e) {
+        std::cerr << e.what() << '\n';
+        return RET_FAILURE;
+    } catch (client::Display::DisplayError &e) {
+        std::cerr << e.what() << '\n';
+        return RET_FAILURE;
+    }
     return RET_SUCCESS;
 }
