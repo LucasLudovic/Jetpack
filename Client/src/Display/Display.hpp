@@ -11,6 +11,7 @@
 #include "Player/Player.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <memory>
 #include <vector>
 
@@ -42,6 +43,9 @@ namespace client {
         void activateWindow();
 
        private:
+        const int _nbCols = 10;
+        const int _nbRows = 10;
+
         float _startX = 0;
         float _endX = 10;
 
@@ -52,7 +56,9 @@ namespace client {
         sf::Texture _coinTexture;
         sf::Texture _laserTexture;
         sf::Texture _playerTexture;
+        sf::Texture _backgroundTexture;
 
+        sf::Sprite _backgroundSprite;
         std::vector<std::unique_ptr<sf::Sprite>> _coin;
         std::vector<std::unique_ptr<sf::Sprite>> _laser;
 
@@ -62,6 +68,7 @@ namespace client {
 
         void _loadFont();
         void _loadAssets();
+        void _loadBackgroundAsset();
         void _loadCoinAssets();
         void _loadPlayerAssets();
         void _loadPlayerRunAssets();
@@ -69,6 +76,7 @@ namespace client {
         void _loadPlayerFlightAssets();
         void _loadLaserAssets();
 
+        void _drawBackground();
         void _drawPlayer(const Player &player, const std::vector<std::string> &map);
         void _drawProps(const std::vector<std::string> &map);
     };
