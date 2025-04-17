@@ -198,12 +198,14 @@ void client::Display::_loadPlayerDieAssets()
 void client::Display::renderFrame(
     const Player &player, const std::vector<std::string> &map)
 {
-    this->_startX = player.getPosX();
+    // this->_startX = player.getPosX();
+    this->_startX =
+        player.getPosX() - (this->_endX - this->_startX) / 2.0;
     this->_endX = this->_startX + 10;
 
     this->_window->clear();
     this->_drawBackground();
-    this->_drawProps(map);
+    this->_drawProps(player, map);
     this->_drawPlayer(player, map);
     this->_window->display();
 }
@@ -239,7 +241,8 @@ void client::Display::_drawBackground()
     this->_window->draw(this->_backgroundSprite, t2);
 }
 
-void client::Display::_drawProps(const std::vector<std::string> &map)
+void client::Display::_drawProps(
+    const Player &player, const std::vector<std::string> &map)
 {
     static size_t frameCounter = 0;
 
@@ -288,13 +291,14 @@ void client::Display::_drawPlayer(
     const size_t runFrame = frameCounter % this->_playerRun.size();
     const size_t flightFrame = frameCounter % this->_playerFlight.size();
     const size_t dieFrame = frameCounter % this->_playerDie.size();
+    float playerStartX = this->_window->getSize().x / 2.0;
 
     if (player.getPosY() > 0) {
         playerSprite = std::move(this->_playerFlight[flightFrame]);
     } else {
         playerSprite = std::move(this->_playerRun[runFrame]);
     }
-    playerSprite->setPosition(player.getPosX() * tileWidth,
+    playerSprite->setPosition(playerStartX - (tileWidth / 2),
         (map.size() - 1 - player.getPosY()) * tileHeight);
     playerSprite->setScale(tileWidth / playerSprite->getLocalBounds().width,
         tileHeight / playerSprite->getLocalBounds().height);
