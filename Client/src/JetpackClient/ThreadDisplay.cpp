@@ -47,6 +47,12 @@ void client::JetpackClient::endMap()
     this->_retrieveMap = false;
 }
 
+void client::JetpackClient::startGame()
+{
+    std::cout << "START GAME\n";
+    this->_state = CLIENT_STATE::PLAYING;
+}
+
 void client::JetpackClient::handleDisplay()
 {
     std::map<std::string, std::function<void()>> instructions{
@@ -61,6 +67,10 @@ void client::JetpackClient::handleDisplay()
         {"END_MAP",
             [this] {
                 endMap();
+            }},
+        {"GAME_START",
+            [this] {
+                startGame();
             }},
     };
 
@@ -81,6 +91,9 @@ void client::JetpackClient::handleDisplay()
             this->_data.pop();
             break;
         }
+    }
+    if (this->_state == CLIENT_STATE::PLAYING) {
+        this->_displayEngine.renderFrame(this->_player, this->_map);
     }
 }
 
