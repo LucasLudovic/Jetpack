@@ -23,6 +23,8 @@ namespace client {
         void renderFrame(
             const Player &player, const std::vector<std::string> &map);
 
+        bool handleEvent();
+
        private:
         std::unique_ptr<sf::RenderWindow> _window = nullptr;
         std::unique_ptr<sf::Font> _font = nullptr;

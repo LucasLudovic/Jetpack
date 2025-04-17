@@ -58,11 +58,13 @@ namespace client {
 
         void retrieveDataServer();
         void handleDisplay();
+        void sendMessage();
 
         void handleWaitingPlayers();
         void startMap();
         void retrieveMap(const std::string &map);
         void endMap();
         void startGame();
+        void updatePlayerPosition(std::string pos);
     };
 }  // namespace client
