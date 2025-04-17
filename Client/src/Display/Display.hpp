@@ -42,6 +42,9 @@ namespace client {
         void activateWindow();
 
        private:
+        float _startX = 0;
+        float _endX = 10;
+
         std::unique_ptr<sf::RenderWindow> _window = nullptr;
         std::unique_ptr<sf::Font> _font = nullptr;
         std::vector<client::Inputs> _events;
@@ -67,5 +70,6 @@ namespace client {
         void _loadLaserAssets();
 
         void _drawPlayer(const Player &player, const std::vector<std::string> &map);
+        void _drawProps(const std::vector<std::string> &map);
     };
 }  // namespace client
