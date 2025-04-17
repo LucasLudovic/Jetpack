@@ -65,6 +65,7 @@ namespace client {
         void retrieveMap(const std::string &map);
         void endMap();
         void startGame();
-        void updatePlayerPosition(std::string pos);
+        void _updatePlayerPosition(std::string pos);
+        void _retrieveCoin();
     };
 }  // namespace client
