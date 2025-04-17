@@ -7,6 +7,5 @@ compile_commands.json
 .cache
 map.txt
 jetpack.tar.gz
-basic.map
 zip/
 coding-style-reports.log
