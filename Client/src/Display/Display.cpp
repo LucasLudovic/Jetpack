@@ -250,15 +250,16 @@ void client::Display::_drawPlayer(
     } else {
         playerSprite = std::move(this->_playerRun[runFrame]);
     }
-    playerSprite->setPosition(
-        player.getPosX() * tileWidth, player.getPosY() * tileHeight);
+    playerSprite->setPosition(player.getPosX() * tileWidth,
+        (map.size() - 1 - player.getPosY()) * tileHeight);
     playerSprite->setScale(tileWidth / playerSprite->getLocalBounds().width,
         tileHeight / playerSprite->getLocalBounds().height);
     this->_window->draw(*playerSprite);
 
     frameCounter += 1;
 
-    std::cout << "position: " << player.getPosX() << " " << player.getPosY() << std::endl;
+    std::cout << "position: " << player.getPosX() << " " << player.getPosY()
+              << std::endl;
     if (player.getPosY() > 0) {
         this->_playerFlight[flightFrame] = std::move(playerSprite);
     } else {
