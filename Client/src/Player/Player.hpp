@@ -16,21 +16,21 @@ namespace client {
         Player() = default;
         ~Player() = default;
 
-        void setPosX(size_t value) { this->_posX = value; };
+        void setPosX(float value) { this->_posX = value; };
 
-        void setPosY(size_t value) { this->_posY = value; };
+        void setPosY(float value) { this->_posY = value; };
 
         void setScore(size_t value) { this->_score = value; };
 
-        [[nodiscard]] size_t getPosX() const { return this->_posX; };
+        [[nodiscard]] float getPosX() const { return this->_posX; };
 
-        [[nodiscard]] size_t getPosY() const { return this->_posY; };
+        [[nodiscard]] float getPosY() const { return this->_posY; };
 
         [[nodiscard]] size_t getScore() const { return this->_score; };
 
        private:
-        size_t _posX = 0;
-        size_t _posY = 0;
+        float _posX = 0;
+        float _posY = 0;
         size_t _score = 0;
         std::vector<size_t> _otherScore;
     };
