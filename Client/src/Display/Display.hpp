@@ -17,6 +17,19 @@
 namespace client {
     class Display {
        public:
+        class DisplayError : public std::exception {
+           public:
+            DisplayError(const std::string &msg) { this->_msg = msg; }
+
+            const char *what() const noexcept override
+            {
+                return this->_msg.c_str();
+            }
+
+           private:
+            std::string _msg;
+        };
+
         Display();
         ~Display();
 
@@ -30,9 +43,24 @@ namespace client {
         std::unique_ptr<sf::Font> _font = nullptr;
         std::vector<client::Inputs> _events;
 
-        sf::Sprite _player;
-        sf::Sprite _coin;
-        sf::Sprite _laser;
+        sf::Texture _coinTexture;
+        sf::Texture _laserTexture;
+        sf::Texture _playerTexture;
+
+        std::vector<std::unique_ptr<sf::Sprite>> _coin;
+        std::vector<std::unique_ptr<sf::Sprite>> _laser;
+
+        std::vector<std::unique_ptr<sf::Sprite>> _playerRun;
+        std::vector<std::unique_ptr<sf::Sprite>> _playerDie;
+        std::vector<std::unique_ptr<sf::Sprite>> _playerFlight;
+
+        void _loadFont();
         void _loadAssets();
+        void _loadCoinAssets();
+        void _loadPlayerAssets();
+        void _loadPlayerRunAssets();
+        void _loadPlayerDieAssets();
+        void _loadPlayerFlightAssets();
+        void _loadLaserAssets();
     };
 }  // namespace client
