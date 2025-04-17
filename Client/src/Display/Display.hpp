@@ -62,5 +62,7 @@ namespace client {
         void _loadPlayerDieAssets();
         void _loadPlayerFlightAssets();
         void _loadLaserAssets();
+
+        void _drawPlayer(const Player &player, const std::vector<std::string> &map);
     };
 }  // namespace client
