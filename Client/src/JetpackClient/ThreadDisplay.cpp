@@ -66,7 +66,7 @@ void client::JetpackClient::updatePlayerPosition(std::string pos)
         std::string posY = pos.substr(value2 + 3);
         std::stringstream convertValue;
         this->_player.setPosX(std::atof(posX.c_str()));
-        this->_player.setPosX(std::atof(posY.c_str()));
+        this->_player.setPosY(std::atof(posY.c_str()));
     }
     
 }
