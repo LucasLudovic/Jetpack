@@ -194,40 +194,48 @@ void client::Display::_loadPlayerDieAssets()
 void client::Display::renderFrame(
     const Player &player, const std::vector<std::string> &map)
 {
-    const float spriteWidth = static_cast<float>(this->_window->getSize().x) /
-                              static_cast<float>(map[0].size());
-    const float spriteHeight = static_cast<float>(this->_window->getSize().y) /
-                               static_cast<float>(map.size());
+    this->_startX = player.getPosX();
+    this->_endX   = this->_startX + 10;
 
+    this->_drawProps(map);
+    this->_drawPlayer(player, map);
+    this->_window->display();
+}
+
+void client::Display::_drawProps(const std::vector<std::string> &map)
+{
     static size_t frameCounter = 0;
+
+    const float width = static_cast<float>(this->_window->getSize().x) /
+                             (this->_endX - this->_startX + 1);
+    const float height = static_cast<float>(this->_window->getSize().y) /
+                               static_cast<float>(map.size());
     const size_t coinFrame = frameCounter % _coin.size();
     const size_t laserFrame = frameCounter % _laser.size();
 
     this->_window->clear();
-    for (size_t y = 0; y < map.size(); ++y) {
-        for (size_t x = 0; x < map[y].size(); ++x) {
+    for (size_t y = 0; y < map.size(); y += 1) {
+        for (size_t x = this->_startX; x < this->_endX; x += 1) {
             char tile = map[y][x];
-            sf::Vector2f position(x * spriteWidth, y * spriteHeight);
+            sf::Vector2f position((x - this->_startX) * width, y * height);
 
             if (tile == 'c') {
                 auto &sprite = *this->_coin[coinFrame];
                 sprite.setPosition(position);
-                sprite.setScale(spriteWidth / sprite.getLocalBounds().width,
-                    spriteHeight / sprite.getLocalBounds().height);
+                sprite.setScale(width / sprite.getLocalBounds().width,
+                    height / sprite.getLocalBounds().height);
                 this->_window->draw(sprite);
             }
             if (tile == 'e') {
                 auto &sprite = *this->_laser[laserFrame];
                 sprite.setPosition(position);
-                sprite.setScale(spriteWidth / sprite.getLocalBounds().width,
-                    spriteHeight / sprite.getLocalBounds().height);
+                sprite.setScale(width / sprite.getLocalBounds().width,
+                    height / sprite.getLocalBounds().height);
                 this->_window->draw(sprite);
             }
         }
     }
     frameCounter += 1;
-    this->_drawPlayer(player, map);
-    this->_window->display();
 }
 
 void client::Display::_drawPlayer(
