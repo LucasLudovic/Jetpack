@@ -38,6 +38,9 @@ namespace client {
 
         bool handleEvent();
 
+        void deactivateWindow();
+        void activateWindow();
+
        private:
         std::unique_ptr<sf::RenderWindow> _window = nullptr;
         std::unique_ptr<sf::Font> _font = nullptr;
