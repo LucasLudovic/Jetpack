@@ -7,9 +7,13 @@
 
 #include "JetpackClient.hpp"
 #include <cstddef>
+#include <cstdlib>
+#include <cstring>
 #include <functional>
 #include <iostream>
 #include <map>
+#include <sstream>
+#include <string>
 #include <thread>
 
 void client::JetpackClient::handleWaitingPlayers()
@@ -53,6 +57,20 @@ void client::JetpackClient::startGame()
     this->_state = CLIENT_STATE::PLAYING;
 }
 
+void client::JetpackClient::updatePlayerPosition(std::string pos)
+{
+    if (pos.find("position:") != std::string::npos) {
+        size_t value = pos.find(":x=");
+        size_t value2 = pos.find(":y=");
+        std::string posX = pos.substr(value + 3, value2 - value - 3);
+        std::string posY = pos.substr(value2 + 3);
+        std::stringstream convertValue;
+        this->_player.setPosX(std::atof(posX.c_str()));
+        this->_player.setPosX(std::atof(posY.c_str()));
+    }
+    
+}
+
 void client::JetpackClient::handleDisplay()
 {
     std::map<std::string, std::function<void()>> instructions{
@@ -68,18 +86,30 @@ void client::JetpackClient::handleDisplay()
             [this] {
                 endMap();
             }},
-        {"GAME_START",
+        {"GAME_START:0",
+            [this] {
+                startGame();
+            }},
+        {"GAME_START:1",
             [this] {
                 startGame();
             }},
     };
-
-    std::lock_guard<std::mutex> lock(this->data_mutex);
-    if (this->_data.empty()) {
+    {
+        std::lock_guard<std::mutex> lock(this->data_mutex);
+        if (this->_data.empty()) {
+            return;
+        }
+    }
+    std::string currentData = this->_data.front();
+    if (this->_state == CLIENT_STATE::PLAYING) {
+        // this->_displayEngine.renderFrame(this->_player, this->_map);
+        this->updatePlayerPosition(currentData);
+        this->_data.pop();
+        if (this->_displayEngine.handleEvent())
+            this->_msg.push("PUSSHED");
         return;
     }
-
-    std::string currentData = this->_data.front();
     for (const auto &it : instructions) {
         if (currentData == it.first) {
             it.second();
@@ -91,9 +121,6 @@ void client::JetpackClient::handleDisplay()
             this->_data.pop();
             break;
         }
-    }
-    if (this->_state == CLIENT_STATE::PLAYING) {
-        this->_displayEngine.renderFrame(this->_player, this->_map);
     }
 }
 

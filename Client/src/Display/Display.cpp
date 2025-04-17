@@ -51,3 +51,21 @@ void client::Display::_loadAssets()
 void client::Display::renderFrame(const Player &player, const std::vector<std::string> &map)
 {
 }
+
+bool client::Display::handleEvent()
+{
+    sf::Event sfmlEvent;
+    bool Event;
+
+    while (this->_window->pollEvent(sfmlEvent)) {
+        switch (sfmlEvent.type) {
+            case sf::Event::KeyPressed: {
+                Event = true;
+                break;
+            }
+            default:
+                break;
+        }
+    }
+    return Event;
+}
