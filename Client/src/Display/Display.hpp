@@ -36,6 +36,7 @@ namespace client {
 
         void renderFrame(
             const Player &player, const std::vector<std::string> &map);
+        void renderEndGame(const Player &player);
 
         bool handleEvent();
 
@@ -77,8 +78,11 @@ namespace client {
         void _loadLaserAssets();
 
         void _drawBackground();
-        void _drawPlayer(const Player &player, const std::vector<std::string> &map);
-        void _drawProps(const Player &player, const std::vector<std::string> &map);
+        void _drawPlayer(
+            const Player &player, const std::vector<std::string> &map);
+        void _drawProps(
+            const Player &player, const std::vector<std::string> &map);
         void _drawAth(const Player &player);
+        void _drawEnd(const Player &player);
     };
 }  // namespace client
