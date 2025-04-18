@@ -72,8 +72,7 @@ static void check_line_coin(player_t *player, int line)
     const size_t end_x = right < 0 ? 0 : (size_t)right;
 
     for (size_t x = start_x; x <= end_x; ++x) {
-        if (line < 0 || x >= strlen(player->map[0]) ||
-            line >= MAP_HEIGHT)
+        if (line < 0 || x >= strlen(player->map[0]) || line >= MAP_HEIGHT)
             continue;
 
         size_t map_y = MAP_HEIGHT - 1 - (size_t)line;
@@ -108,15 +107,34 @@ static long compute_last_time(player_t *player, struct timespec *current_time)
     return time_since_last_ask;
 }
 
+static void send_win(server_t *server)
+{
+    const char msg[] = "WIN\r\n";
+    player_t *player = NULL;
+
+    for (size_t i = 0; i < server->nb_player; i += 1) {
+        player = server->players[i];
+        if (player == NULL)
+            return;
+        if (player->is_alive == TRUE) {
+            send(player->socket->fd, msg, strlen(msg), 0);
+            return;
+        }
+    }
+}
+
 static int check_collision(server_t *server, player_t *player)
 {
+    const char msg[] = "DIED\r\n";
+
     if (server->map[MAP_HEIGHT - 1 - (size_t)player->position.y]
                    [(size_t)player->position.x] == 'e') {
         player->is_alive = FALSE;
         player->ended = TRUE;
         for (size_t i = 0; i < 16; i += 1) {
-            send(player->socket->fd, "DIED\r\n", strlen("DIED\r\n"), 0);
+            send(player->socket->fd, msg, strlen(msg), 0);
         }
+        send_win(server);
         return TRUE;
     }
     return FALSE;
