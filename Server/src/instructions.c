@@ -52,10 +52,13 @@ static void set_down_pos(
 static void check_coin(
     server_t *server, player_t *player, vector2_t *last_position)
 {
-    if (server->map[MAP_HEIGHT - 1 - (size_t)player->position.y][(size_t)player->position.x] ==
-            'c' &&
+    if (server->map[MAP_HEIGHT - 1 - (size_t)player->position.y]
+                   [(size_t)player->position.x] == 'c' &&
         (size_t)last_position->x != (size_t)player->position.x &&
         (size_t)last_position->y != (size_t)player->position.y) {
+        if (player->position.x / 1 > 0.2) {
+            player->score += 1;
+        }
         player->score += 1;
     }
 }
@@ -77,7 +80,9 @@ static int check_collision(server_t *server, player_t *player)
         [(size_t)player->position.x] == 'e') {
         player->is_alive = FALSE;
         player->ended = TRUE;
-        send(player->socket->fd, "DIED\r\n", strlen("DIED\r\n"), 0);
+        for (size_t i = 0; i < 16; i += 1) {
+            send(player->socket->fd, "DIED\r\n", strlen("DIED\r\n"), 0);
+        }
         return TRUE;
     }
     return FALSE;
@@ -97,8 +102,8 @@ void move_up(server_t *server, player_t *player)
     set_up_pos(server, player, time_since_last_ask);
     check_coin(server, player, &last_position);
     player->time_last_ask = current_time;
-    snprintf(buff, BUFFSIZE, "position:x=%f:y=%f\r\n", player->position.x,
-        player->position.y);
+    snprintf(buff, BUFFSIZE, "position:x=%f:y=%f:s=%zu\r\n",
+        player->position.x, player->position.y, player->score);
     send(player->socket->fd, buff, strlen(buff), 0);
 }
 
@@ -116,8 +121,8 @@ void send_pos(server_t *server, player_t *player)
     set_down_pos(server, player, time_since_last_ask);
     check_coin(server, player, &last_position);
     player->time_last_ask = current_time;
-    snprintf(buff, BUFFSIZE, "position:x=%f:y=%f\r\n", player->position.x,
-        player->position.y);
+    snprintf(buff, BUFFSIZE, "position:x=%f:y=%f:=%zu\r\n", player->position.x,
+        player->position.y, player->score);
     send(player->socket->fd, buff, strlen(buff), 0);
 }
 
