@@ -107,34 +107,61 @@ static long compute_last_time(player_t *player, struct timespec *current_time)
     return time_since_last_ask;
 }
 
-static void send_win(server_t *server)
+static void send_death(server_t *server)
 {
-    const char msg[] = "WIN\r\n";
+    const char msgWin[] = "WIN\r\n";
+    const char msgLose[] = "LOSE\r\n";
     player_t *player = NULL;
 
+    if (server->game_state != ENDED) {
+        return;
+    }
     for (size_t i = 0; i < server->nb_player; i += 1) {
         player = server->players[i];
         if (player == NULL)
             return;
         if (player->is_alive == TRUE) {
-            send(player->socket->fd, msg, strlen(msg), 0);
-            return;
+            send(player->socket->fd, msgWin, strlen(msgWin), 0);
+            continue;
         }
+        send(player->socket->fd, msgLose, strlen(msgLose), 0);
     }
+}
+
+static void send_end(server_t *server)
+{
+    const char msgWin[] = "WIN\r\n";
+    const char msgLose[] = "LOSE\r\n";
+    const char msgDraw[] = "DRAW\r\n";
+    const size_t score1 = server->players[0]->score;
+    const size_t score2 = server->players[1]->score;
+
+    for (size_t i = 0; i < server->nb_player; i += 1) {
+        if (server->players[i]->is_alive == TRUE)
+            return;
+    }
+    if (score1 > score2) {
+        send(server->players[0]->socket->fd, msgWin, strlen(msgWin), 0);
+        send(server->players[1]->socket->fd, msgLose, strlen(msgLose), 0);
+        return;
+    }
+    if (score1 < score2) {
+        send(server->players[1]->socket->fd, msgWin, strlen(msgWin), 0);
+        send(server->players[0]->socket->fd, msgLose, strlen(msgLose), 0);
+        return;
+    }
+    send(server->players[1]->socket->fd, msgDraw, strlen(msgDraw), 0);
+    send(server->players[0]->socket->fd, msgDraw, strlen(msgDraw), 0);
 }
 
 static int check_collision(server_t *server, player_t *player)
 {
-    const char msg[] = "DIED\r\n";
-
     if (server->map[MAP_HEIGHT - 1 - (size_t)player->position.y]
                    [(size_t)player->position.x] == 'e') {
         player->is_alive = FALSE;
         player->ended = TRUE;
-        for (size_t i = 0; i < 16; i += 1) {
-            send(player->socket->fd, msg, strlen(msg), 0);
-        }
-        send_win(server);
+        server->game_state = ENDED;
+        send_death(server);
         return TRUE;
     }
     return FALSE;
@@ -145,14 +172,16 @@ void move_up(server_t *server, player_t *player)
     char buff[BUFFSIZE];
     struct timespec current_time = {0};
     long time_since_last_ask = 0;
+    size_t score1 = server->players[0]->score;
+    size_t score2 = server->players[1]->score;
 
     clock_gettime(CLOCK_MONOTONIC, &current_time);
     time_since_last_ask = compute_last_time(player, &current_time);
     set_up_pos(server, player, time_since_last_ask);
     check_coin(player);
     player->time_last_ask = current_time;
-    snprintf(buff, BUFFSIZE, "position:x=%f:y=%f:s=%zu\r\n",
-        player->position.x, player->position.y, player->score);
+    snprintf(buff, BUFFSIZE, "position:x=%f:y=%f:s1=%zu,s2=%zu\r\n",
+        player->position.x, player->position.y, score1, score2);
     send(player->socket->fd, buff, strlen(buff), 0);
 }
 
@@ -202,6 +231,7 @@ int execute_instructions(server_t *server, player_t *player, size_t i)
             return SUCCESS;
         }
     }
+    send_death(server);
     send(player->socket->fd, unknown, strlen(unknown), 0);
     return SUCCESS;
 }

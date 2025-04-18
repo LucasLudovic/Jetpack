@@ -18,7 +18,8 @@
 enum GameState {
     WAITING_PLAYER,
     INIT,
-    STARTED
+    STARTED,
+    ENDED
 };
 
 typedef struct server_s {
