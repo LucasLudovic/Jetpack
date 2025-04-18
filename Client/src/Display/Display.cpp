@@ -84,7 +84,7 @@ void client::Display::_loadAssets()
 
 void client::Display::_loadBackgroundAsset()
 {
-    if (!this->_backgroundTexture.loadFromFile("assets/background.png")) {
+    if (!this->_backgroundTexture.loadFromFile("assets/background1.png")) {
         throw DisplayError("Unable to load backgroundTexture");
     }
     this->_backgroundSprite.setTexture(this->_backgroundTexture);
@@ -92,10 +92,10 @@ void client::Display::_loadBackgroundAsset()
 
 void client::Display::_loadCoinAssets()
 {
-    const int height = 171;
-    const int width = 192;
+    const int height = 67;
+    const int width = 75;
 
-    if (!this->_coinTexture.loadFromFile("assets/coins_sprite_sheet.png")) {
+    if (!this->_coinTexture.loadFromFile("assets/coins_sprite_sheet1.png")) {
         throw DisplayError("Unable to load coinTexture");
     }
     for (int i = 0; i < this->_coinTexture.getSize().x / width; i += 1) {
@@ -136,7 +136,7 @@ void client::Display::_loadLaserAssets()
 
 void client::Display::_loadPlayerAssets()
 {
-    if (!this->_playerTexture.loadFromFile("assets/player_sprite_sheet.png")) {
+    if (!this->_playerTexture.loadFromFile("assets/player_sprite_sheet1.png")) {
         throw DisplayError("Unable to load playerTexture");
     }
     this->_loadPlayerRunAssets();
@@ -262,13 +262,11 @@ void client::Display::_drawProps(
             if (tile == 'c') {
                 auto &sprite = *this->_coin[coinFrame];
                 sprite.setPosition(position);
-                sprite.setScale(0.6, 0.6);
                 this->_window->draw(sprite);
             }
             if (tile == 'e') {
                 auto &sprite = *this->_laser[laserFrame];
                 sprite.setPosition(position);
-                sprite.setScale(1, 1);
                 this->_window->draw(sprite);
             }
         }
@@ -308,7 +306,6 @@ void client::Display::_drawPlayer(
     }
     playerSprite->setPosition(playerStartX - (tileWidth / 2),
         (map.size() - 1 - player.getPosY()) * tileHeight);
-    playerSprite->setScale(0.75, 0.75);
     this->_window->draw(*playerSprite);
 
     if (player.getPosY() > 0 && player.getPlayerAlive()) {
