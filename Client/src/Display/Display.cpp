@@ -152,6 +152,9 @@ void client::Display::_loadPlayerRunAssets()
     const int spriteHeight = this->_playerTexture.getSize().y / rows;
     const int rowIndex = 0;
 
+    std::cout << "Texture size: " << this->_playerTexture.getSize().x << "x"
+              << this->_playerTexture.getSize().y << std::endl;
+
     for (size_t i = 0; i < columns; i += 1) {
         auto sprite = std::make_unique<sf::Sprite>();
         sprite->setTexture(_playerTexture);
@@ -167,7 +170,7 @@ void client::Display::_loadPlayerFlightAssets()
     const int rows = 6;
     const int spriteWidth = this->_playerTexture.getSize().x / columns;
     const int spriteHeight = this->_playerTexture.getSize().y / rows;
-    const int rowIndex = 2;
+    const int rowIndex = 1;
 
     for (size_t i = 0; i < columns; i += 1) {
         auto sprite = std::make_unique<sf::Sprite>();
@@ -199,8 +202,7 @@ void client::Display::renderFrame(
     const Player &player, const std::vector<std::string> &map)
 {
     // this->_startX = player.getPosX();
-    this->_startX =
-        player.getPosX() - (this->_endX - this->_startX) / 2.0;
+    this->_startX = player.getPosX() - (this->_endX - this->_startX) / 2.0;
     this->_endX = this->_startX + 10;
 
     this->_window->clear();
@@ -261,15 +263,13 @@ void client::Display::_drawProps(
             if (tile == 'c') {
                 auto &sprite = *this->_coin[coinFrame];
                 sprite.setPosition(position);
-                sprite.setScale(width / sprite.getLocalBounds().width,
-                    height / sprite.getLocalBounds().height);
+                sprite.setScale(0.75, 0.75);
                 this->_window->draw(sprite);
             }
             if (tile == 'e') {
                 auto &sprite = *this->_laser[laserFrame];
                 sprite.setPosition(position);
-                sprite.setScale(width / sprite.getLocalBounds().width,
-                    height / sprite.getLocalBounds().height);
+                sprite.setScale(0.75, 0.75);
                 this->_window->draw(sprite);
             }
         }
@@ -282,11 +282,18 @@ void client::Display::_drawPlayer(
 {
     static size_t frameCounter = 0;
     std::unique_ptr<sf::Sprite> playerSprite;
+    static int frameDelay = 0;
 
     const float tileWidth = static_cast<float>(this->_window->getSize().x) /
                             static_cast<float>(map[0].size());
     const float tileHeight = static_cast<float>(this->_window->getSize().y) /
                              static_cast<float>(map.size());
+
+    frameDelay++;
+    if (frameDelay >= 6) {
+        frameCounter++;
+        frameDelay = 0;
+    }
 
     const size_t runFrame = frameCounter % this->_playerRun.size();
     const size_t flightFrame = frameCounter % this->_playerFlight.size();
@@ -300,11 +307,8 @@ void client::Display::_drawPlayer(
     }
     playerSprite->setPosition(playerStartX - (tileWidth / 2),
         (map.size() - 1 - player.getPosY()) * tileHeight);
-    playerSprite->setScale(tileWidth / playerSprite->getLocalBounds().width,
-        tileHeight / playerSprite->getLocalBounds().height);
+    playerSprite->setScale(0.75, 0.75);
     this->_window->draw(*playerSprite);
-
-    frameCounter += 1;
 
     if (player.getPosY() > 0) {
         this->_playerFlight[flightFrame] = std::move(playerSprite);
