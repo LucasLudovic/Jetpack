@@ -57,6 +57,8 @@ bool client::Display::handleEvent()
     while (this->_window->pollEvent(sfmlEvent)) {
         switch (sfmlEvent.type) {
             case sf::Event::KeyPressed: {
+                if (sfmlEvent.key.code == sf::Keyboard::Q)
+                    exit (0);
                 Event = true;
                 break;
             }
@@ -212,11 +214,18 @@ void client::Display::renderFrame(
     this->_window->display();
 }
 
-void client::Display::_drawAth(const Player &player)
+void client::Display::renderEndGame(const Player &player)
+{
+    this->_window->clear();
+    this->_drawEnd(player);
+    this->_window->display();
+}
+
+void client::Display::_drawEnd(const Player &player)
 {
     sf::Text text;
     text.setFont(*this->_font);
-    text.setCharacterSize(100);
+    text.setCharacterSize(24);
 
     std::stringstream stream;
     if (player.getPlayerWin()) {
@@ -228,8 +237,22 @@ void client::Display::_drawAth(const Player &player)
     }
 
     text.setString(stream.str());
-    text.setPosition(1920 / 2, 180 / 2);
+    text.setPosition(1920 / 2, 1080 / 2);
     this->_window->clear();
+    this->_window->draw(text);
+}
+
+void client::Display::_drawAth(const Player &player)
+{
+    sf::Text text;
+    text.setFont(*this->_font);
+    text.setCharacterSize(24);
+
+    std::stringstream stream;
+    stream << "SCORE: " << player.getScore() << "\n";
+
+    text.setString(stream.str());
+    text.setPosition(20, 20);
     this->_window->draw(text);
 }
 
@@ -295,14 +318,16 @@ void client::Display::_drawProps(
                 auto &sprite = *this->_coin[coinFrame];
                 auto bounds = sprite.getLocalBounds();
                 sprite.setOrigin(bounds.width / 2.0, bounds.height / 2.0);
-                sprite.setPosition(position.x + (width / 2.0), position.y + (height / 2));
+                sprite.setPosition(
+                    position.x + (width / 2.0), position.y + (height / 2));
                 this->_window->draw(sprite);
             }
             if (tile == 'e') {
                 auto &sprite = *this->_laser[laserFrame];
                 auto bounds = sprite.getLocalBounds();
                 sprite.setOrigin(bounds.width / 2.0, bounds.height / 2.0);
-                sprite.setPosition(position.x + (width / 2.0), position.y + (height / 2));
+                sprite.setPosition(
+                    position.x + (width / 2.0), position.y + (height / 2));
                 this->_window->draw(sprite);
             }
         }
