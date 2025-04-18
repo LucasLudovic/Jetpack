@@ -37,13 +37,13 @@ void client::JetpackClient::runNetworkThread()
             auto frameDuration =
                 std::chrono::duration_cast<std::chrono::milliseconds>(
                     frameEnd - frameStart);
-            const std::chrono::milliseconds targetFrameDuration(100);
+            const std::chrono::milliseconds targetFrameDuration(33);
             if (frameDuration < targetFrameDuration) {
                 std::this_thread::sleep_for(
                     targetFrameDuration - frameDuration);
             }
         }
     } catch (...) {
-        exit (RET_FAILURE);
+        exit(RET_FAILURE);
     }
 }
