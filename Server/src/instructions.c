@@ -121,7 +121,7 @@ void send_pos(server_t *server, player_t *player)
     set_down_pos(server, player, time_since_last_ask);
     check_coin(server, player, &last_position);
     player->time_last_ask = current_time;
-    snprintf(buff, BUFFSIZE, "position:x=%f:y=%f:=%zu\r\n", player->position.x,
+    snprintf(buff, BUFFSIZE, "position:x=%f:y=%f:s=%zu\r\n", player->position.x,
         player->position.y, player->score);
     send(player->socket->fd, buff, strlen(buff), 0);
 }
