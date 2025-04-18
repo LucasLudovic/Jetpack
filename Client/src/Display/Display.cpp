@@ -265,14 +265,22 @@ void client::Display::_drawBackground()
 void client::Display::_drawProps(
     const Player &player, const std::vector<std::string> &map)
 {
-    static size_t frameCounter = 0;
+    static size_t frameCounterCoin = 0;
+    static size_t frameCounterLaser = 0;
+    static int frameDelay = 0;
+
+    frameDelay++;
+    if (frameDelay >= 6) {
+        frameCounterLaser++;
+        frameDelay = 0;
+    }
 
     const float width = static_cast<float>(this->_window->getSize().x) /
                         (this->_endX - this->_startX + 1);
     const float height = static_cast<float>(this->_window->getSize().y) /
                          static_cast<float>(map.size());
-    const size_t coinFrame = frameCounter % _coin.size();
-    const size_t laserFrame = frameCounter % _laser.size();
+    const size_t coinFrame = frameCounterCoin % _coin.size();
+    const size_t laserFrame = frameCounterLaser % _laser.size();
 
     for (size_t y = 0; y < map.size(); y += 1) {
         for (size_t x = this->_startX; x < this->_endX; x += 1) {
@@ -297,7 +305,7 @@ void client::Display::_drawProps(
             }
         }
     }
-    frameCounter += 1;
+    frameCounterCoin += 1;
 }
 
 void client::Display::_drawPlayer(
