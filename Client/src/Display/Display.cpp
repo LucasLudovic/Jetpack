@@ -152,9 +152,6 @@ void client::Display::_loadPlayerRunAssets()
     const int spriteHeight = this->_playerTexture.getSize().y / rows;
     const int rowIndex = 0;
 
-    std::cout << "Texture size: " << this->_playerTexture.getSize().x << "x"
-              << this->_playerTexture.getSize().y << std::endl;
-
     for (size_t i = 0; i < columns; i += 1) {
         auto sprite = std::make_unique<sf::Sprite>();
         sprite->setTexture(_playerTexture);
@@ -187,7 +184,7 @@ void client::Display::_loadPlayerDieAssets()
     const int rows = 6;
     const int spriteWidth = this->_playerTexture.getSize().x / columns;
     const int spriteHeight = this->_playerTexture.getSize().y / rows;
-    const int rowIndex = 4;
+    const int rowIndex = 3;
 
     for (size_t i = 0; i < columns; i += 1) {
         auto sprite = std::make_unique<sf::Sprite>();
@@ -263,13 +260,13 @@ void client::Display::_drawProps(
             if (tile == 'c') {
                 auto &sprite = *this->_coin[coinFrame];
                 sprite.setPosition(position);
-                sprite.setScale(0.75, 0.75);
+                sprite.setScale(0.6, 0.6);
                 this->_window->draw(sprite);
             }
             if (tile == 'e') {
                 auto &sprite = *this->_laser[laserFrame];
                 sprite.setPosition(position);
-                sprite.setScale(0.75, 0.75);
+                sprite.setScale(1, 1);
                 this->_window->draw(sprite);
             }
         }
@@ -300,19 +297,23 @@ void client::Display::_drawPlayer(
     const size_t dieFrame = frameCounter % this->_playerDie.size();
     float playerStartX = this->_window->getSize().x / 2.0;
 
-    if (player.getPosY() > 0) {
+    if (player.getPosY() > 0 && player.getPlayerAlive()) {
         playerSprite = std::move(this->_playerFlight[flightFrame]);
-    } else {
+    } else if (player.getPlayerAlive()) {
         playerSprite = std::move(this->_playerRun[runFrame]);
+    } else {
+        playerSprite = std::move(this->_playerDie[dieFrame]);
     }
     playerSprite->setPosition(playerStartX - (tileWidth / 2),
         (map.size() - 1 - player.getPosY()) * tileHeight);
     playerSprite->setScale(0.75, 0.75);
     this->_window->draw(*playerSprite);
 
-    if (player.getPosY() > 0) {
+    if (player.getPosY() > 0 && player.getPlayerAlive()) {
         this->_playerFlight[flightFrame] = std::move(playerSprite);
-    } else {
+    } else if (player.getPlayerAlive()) {
         this->_playerRun[runFrame] = std::move(playerSprite);
+    } else {
+        this->_playerDie[dieFrame] = std::move(playerSprite);
     }
 }
