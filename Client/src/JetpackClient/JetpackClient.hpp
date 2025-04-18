@@ -50,21 +50,22 @@ namespace client {
         client::Network _network;
         client::Display _displayEngine;
         Player _player;
-        bool _retrieveMap;
+        bool _MapIsRetrieve;
         std::vector<std::string> _map;
 
-        void runNetworkThread();
-        void runDisplayThread();
+        void _runNetworkThread();
+        void _runDisplayThread();
 
-        void retrieveDataServer();
-        void handleDisplay();
-        void sendMessage();
+        void _retrieveDataServer();
+        void _handleDisplay();
+        void _gameRunning(const std::string &currentData);
+        void _sendMessage();
 
-        void handleWaitingPlayers();
-        void startMap();
-        void retrieveMap(const std::string &map);
-        void endMap();
-        void startGame();
+        void _handleWaitingPlayers();
+        void _startMap();
+        void _retrieveMap(const std::string &map);
+        void _endMap();
+        void _startGame();
         void _updatePlayerPosition(const std::string &pos);
         void _retrieveCoin();
     };

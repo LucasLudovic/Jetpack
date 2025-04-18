@@ -7,12 +7,11 @@
 
 #include "JetpackClient.hpp"
 #include "client.hpp"
-#include <iostream>
 #include <mutex>
 #include <string>
 #include <thread>
 
-void client::JetpackClient::runNetworkThread()
+void client::JetpackClient::_runNetworkThread()
 {
     try {
         while (this->_running) {
