@@ -163,8 +163,5 @@ void load_map(server_t *server)
         }
     }
     check_map_height(server, nb_lines);
-    for (size_t i = 0; i < MAP_HEIGHT; i += 1) {
-        printf("%s\n", server->map[i]);
-    }
     fclose(file);
 }
