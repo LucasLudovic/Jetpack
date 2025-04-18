@@ -108,8 +108,17 @@ void client::JetpackClient::_gameRunning(const std::string &currentData)
 {
     if (this->_state == CLIENT_STATE::PLAYING) {
         this->_updatePlayerPosition(currentData);
-        if (currentData.find("GAME_END") != std::string::npos) {
-            exit(0);
+        if (currentData.find("WIN") != std::string::npos) {
+            this->_player.setPlayerWin(true);
+            this->_displayEngine.renderEndGame(this->_player);
+            this->_displayEngine.handleEvent();
+            return;
+        }
+        if (currentData.find("LOSE") != std::string::npos) {
+            this->_player.setPlayerWin(false);
+            this->_displayEngine.renderEndGame(this->_player);
+            this->_displayEngine.handleEvent();
+            return;
         }
         this->_retrieveCoin();
         this->_displayEngine.renderFrame(this->_player, this->_map);
