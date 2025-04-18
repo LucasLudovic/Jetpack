@@ -23,10 +23,10 @@ static void set_up_pos(
     server_t *server, player_t *player, long time_since_last_ask)
 {
     char msg[BUFFSIZE] = {0};
-    const ssize_t p1_score =
-        server->players[0] ? server->players[0]->score : -1;
-    const ssize_t p2_score =
-        server->players[1] ? server->players[1]->score : -1;
+    const size_t p1_score =
+        server->players[0] ? server->players[0]->score : 0;
+    const size_t p2_score =
+        server->players[1] ? server->players[1]->score : 0;
 
     player->position.y += 0.05 * time_since_last_ask;
     player->position.x += 0.02 * time_since_last_ask;
@@ -37,7 +37,7 @@ static void set_up_pos(
         player->position.x = strlen(server->map[0]) - 1;
         player->ended = TRUE;
         snprintf(
-            msg, BUFFSIZE, "GAME_END:p1%ld:p2%ld\r\n", p1_score, p2_score);
+            msg, BUFFSIZE, "GAME_END:p1%lu:p2%lu\r\n", p1_score, p2_score);
         send(player->socket->fd, msg, strlen(msg), 0);
     }
 }
@@ -46,10 +46,10 @@ static void set_down_pos(
     server_t *server, player_t *player, long time_since_last_ask)
 {
     char msg[BUFFSIZE] = {0};
-    const ssize_t p1_score =
-        server->players[0] ? server->players[0]->score : -1;
-    const ssize_t p2_score =
-        server->players[1] ? server->players[1]->score : -1;
+    const size_t p1_score =
+        server->players[0] ? server->players[0]->score : 0;
+    const size_t p2_score =
+        server->players[1] ? server->players[1]->score : 0;
 
     player->position.y -= 0.05 * time_since_last_ask;
     player->position.x += 0.02 * time_since_last_ask;
@@ -62,7 +62,7 @@ static void set_down_pos(
         player->position.x = strlen(server->map[0]) - 1;
         player->ended = TRUE;
         snprintf(
-            msg, BUFFSIZE, "GAME_END:p1%ld:p2%ld\r\n", p1_score, p2_score);
+            msg, BUFFSIZE, "GAME_END:p1%lu:p2%lu\r\n", p1_score, p2_score);
         send(player->socket->fd, msg, strlen(msg), 0);
     }
 }
