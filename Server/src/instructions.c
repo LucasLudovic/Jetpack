@@ -63,19 +63,20 @@ static void set_down_pos(
     }
 }
 
-static void check_line_coin(player_t *player)
+static void check_line_coin(player_t *player, int line)
 {
-    const float hitbox_width = 0.8;
+    const float hitbox_width = 0.7;
     const float left = player->position.x - (hitbox_width / 2.0);
     const float right = player->position.x + (hitbox_width / 2.0);
     const int start_x = (int)left;
-    const int end_x = (int)right;
+    const size_t end_x = right < 0 ? 0 : (size_t)right;
 
-    for (int x = start_x; x <= end_x; ++x) {
-        if (x < 0 || y < 0 || x >= strlen(player->map[0]) || y >= MAP_HEIGHT)
+    for (size_t x = start_x; x <= end_x; ++x) {
+        if (line < 0 || x >= strlen(player->map[0]) ||
+            line >= MAP_HEIGHT)
             continue;
 
-        size_t map_y = MAP_HEIGHT - 1 - (size_t)y;
+        size_t map_y = MAP_HEIGHT - 1 - (size_t)line;
         if (player->map[map_y][x] == 'c') {
             player->map[map_y][x] = '_';
             player->score += 1;
@@ -85,14 +86,14 @@ static void check_line_coin(player_t *player)
 
 static void check_coin(player_t *player)
 {
-    const float hitbox_height = 0.8;
+    const float hitbox_height = 0.7;
     const float bottom = player->position.y - (hitbox_height / 2.0);
     const float top = player->position.y + (hitbox_height / 2.0);
     const int start_y = (int)bottom;
     const int end_y = (int)top;
 
     for (int y = start_y; y <= end_y; ++y) {
-        check_line_coin(player);
+        check_line_coin(player, y);
     }
 }
 
