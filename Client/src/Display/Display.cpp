@@ -216,18 +216,20 @@ void client::Display::_drawAth(const Player &player)
 {
     sf::Text text;
     text.setFont(*this->_font);
-    text.setCharacterSize(24);
+    text.setCharacterSize(100);
 
     std::stringstream stream;
-    if (player.getPlayerAlive()) {
+    if (player.getPlayerWin()) {
+        stream << "WIN :)\n";
         stream << "SCORE: " << player.getScore() << "\n";
     } else {
-        stream << "DEAD\n";
+        stream << "Lose (Skill Issue)\n";
         stream << "FINAL SCORE: " << player.getScore() << "\n";
     }
 
     text.setString(stream.str());
-    text.setPosition(20, 20);
+    text.setPosition(1920 / 2, 180 / 2);
+    this->_window->clear();
     this->_window->draw(text);
 }
 
@@ -331,22 +333,18 @@ void client::Display::_drawPlayer(
     const size_t dieFrame = frameCounter % this->_playerDie.size();
     float playerStartX = this->_window->getSize().x / 2.0;
 
-    if (player.getPosY() > 0 && player.getPlayerAlive()) {
+    if (player.getPosY() > 0) {
         playerSprite = std::move(this->_playerFlight[flightFrame]);
-    } else if (player.getPlayerAlive()) {
-        playerSprite = std::move(this->_playerRun[runFrame]);
     } else {
-        playerSprite = std::move(this->_playerDie[dieFrame]);
+        playerSprite = std::move(this->_playerRun[runFrame]);
     }
     playerSprite->setPosition(playerStartX - (tileWidth / 2),
         (map.size() - 1 - player.getPosY()) * tileHeight);
     this->_window->draw(*playerSprite);
 
-    if (player.getPosY() > 0 && player.getPlayerAlive()) {
+    if (player.getPosY() > 0) {
         this->_playerFlight[flightFrame] = std::move(playerSprite);
-    } else if (player.getPlayerAlive()) {
-        this->_playerRun[runFrame] = std::move(playerSprite);
     } else {
-        this->_playerDie[dieFrame] = std::move(playerSprite);
+        this->_playerRun[runFrame] = std::move(playerSprite);
     }
 }
