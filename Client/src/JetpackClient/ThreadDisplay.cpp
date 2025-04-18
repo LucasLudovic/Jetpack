@@ -7,6 +7,7 @@
 
 #include "JetpackClient.hpp"
 #include "client.hpp"
+#include <chrono>
 #include <cmath>
 #include <cstddef>
 #include <cstdlib>
@@ -139,12 +140,9 @@ void client::JetpackClient::handleDisplay()
     std::string currentData = this->_data.front();
     if (this->_state == CLIENT_STATE::PLAYING) {
         this->_updatePlayerPosition(currentData);
-        if (currentData == "GAME_END") {
-            std::cout << "Game End" << std::endl;
+        if (currentData.find("GAME_END") != std::string::npos) {
             exit(0);
         }
-        if (currentData == "DIED")
-            this->_player.setPlayerAlive(false);
         this->_retrieveCoin();
         this->_displayEngine.renderFrame(this->_player, this->_map);
         this->_data.pop();
