@@ -10,14 +10,13 @@
 #include "client.hpp"
 #include <cstdint>
 #include <cstring>
-#include <iostream>
 #include <string>
 #include <thread>
 
 client::JetpackClient::JetpackClient(
     const std::string &ip, const std::string &port)
     : _ip(ip), _port(port), _running(true), _network(ip, port),
-      _state(CLIENT_STATE::UNDEFIDED), _retrieveMap(false)
+      _state(CLIENT_STATE::UNDEFIDED), _MapIsRetrieve(false)
 {}
 
 client::JetpackClient::~JetpackClient() {}
@@ -28,8 +27,8 @@ std::uint8_t client::JetpackClient::runClient()
     this->_displayEngine.deactivateWindow();
     std::exception_ptr ThreadException = nullptr;
 
-    std::thread networkThread(&JetpackClient::runNetworkThread, this);
-    std::thread displayThread(&JetpackClient::runDisplayThread, this);
+    std::thread networkThread(&JetpackClient::_runNetworkThread, this);
+    std::thread displayThread(&JetpackClient::_runDisplayThread, this);
 
     networkThread.join();
     displayThread.join();
