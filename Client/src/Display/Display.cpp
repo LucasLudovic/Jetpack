@@ -254,6 +254,8 @@ void client::Display::_drawProps(
 
     for (size_t y = 0; y < map.size(); y += 1) {
         for (size_t x = this->_startX; x < this->_endX; x += 1) {
+            if (x >= map[y].size())
+                break;
             char tile = map[y][x];
             sf::Vector2f position((x - this->_startX) * width, y * height);
 
