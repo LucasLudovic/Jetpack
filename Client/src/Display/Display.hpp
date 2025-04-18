@@ -79,5 +79,6 @@ namespace client {
         void _drawBackground();
         void _drawPlayer(const Player &player, const std::vector<std::string> &map);
         void _drawProps(const Player &player, const std::vector<std::string> &map);
+        void _drawAth(const Player &player);
     };
 }  // namespace client

@@ -19,6 +19,7 @@
 #include <SFML/Window/WindowStyle.hpp>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <vector>
 
 client::Display::Display()
@@ -136,7 +137,8 @@ void client::Display::_loadLaserAssets()
 
 void client::Display::_loadPlayerAssets()
 {
-    if (!this->_playerTexture.loadFromFile("assets/player_sprite_sheet1.png")) {
+    if (!this->_playerTexture.loadFromFile(
+            "assets/player_sprite_sheet1.png")) {
         throw DisplayError("Unable to load playerTexture");
     }
     this->_loadPlayerRunAssets();
@@ -206,7 +208,33 @@ void client::Display::renderFrame(
     this->_drawBackground();
     this->_drawProps(player, map);
     this->_drawPlayer(player, map);
+    this->_drawAth(player);
     this->_window->display();
+}
+
+void client::Display::_drawAth(const Player &player)
+{
+    sf::Text text;
+    text.setFont(*this->_font);
+    text.setCharacterSize(24);
+
+    std::stringstream stream;
+    if (player.getPlayerAlive()) {
+        stream << "SCORE: " << player.getScore()
+               << std::string(
+                      18 - std::to_string(player.getScore()).size(), ' ')
+               << "\n";
+    } else {
+        stream << "      *** DEAD ***      \n";
+        stream << "FINAL SCORE: " << player.getScore()
+               << std::string(
+                      10 - std::to_string(player.getScore()).size(), ' ')
+               << "\n";
+    }
+
+    text.setString(stream.str());
+    text.setPosition(20, 20);
+    this->_window->draw(text);
 }
 
 void client::Display::_drawBackground()
