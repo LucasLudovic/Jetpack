@@ -306,8 +306,6 @@ void client::Display::_drawPlayer(
 
     frameCounter += 1;
 
-    std::cout << "position: " << player.getPosX() << " " << player.getPosY()
-              << std::endl;
     if (player.getPosY() > 0) {
         this->_playerFlight[flightFrame] = std::move(playerSprite);
     } else {
