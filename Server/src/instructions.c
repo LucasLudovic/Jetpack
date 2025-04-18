@@ -22,8 +22,8 @@ const command_t commands[] = {
 static void set_up_pos(
     server_t *server, player_t *player, long time_since_last_ask)
 {
-    player->position.y += 0.1 * time_since_last_ask;
-    player->position.x += 0.1 * time_since_last_ask;
+    player->position.y += 0.2 * time_since_last_ask;
+    player->position.x += 0.2 * time_since_last_ask;
     if (player->position.y > MAP_HEIGHT - 1) {
         player->position.y = MAP_HEIGHT - 1;
     }
@@ -36,8 +36,8 @@ static void set_up_pos(
 static void set_down_pos(
     server_t *server, player_t *player, long time_since_last_ask)
 {
-    player->position.y -= 0.05 * time_since_last_ask;
-    player->position.x += 0.1 * time_since_last_ask;
+    player->position.y -= 0.2 * time_since_last_ask;
+    player->position.x += 0.2 * time_since_last_ask;
     if (player->position.y < 0)
         player->position.y = 0;
     if (player->position.y >= MAP_HEIGHT - 1) {
