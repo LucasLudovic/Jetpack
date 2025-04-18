@@ -113,8 +113,10 @@ void client::JetpackClient::handleDisplay()
     std::string currentData = this->_data.front();
     if (this->_state == CLIENT_STATE::PLAYING) {
         this->_updatePlayerPosition(currentData);
-        if (currentData == "GAME_END")
+        if (currentData == "GAME_END") {
+            std::cout << "Game End" << std::endl;
             exit (0);
+        }
         this->_retrieveCoin();
         this->_displayEngine.renderFrame(this->_player, this->_map);
         this->_data.pop();
