@@ -7,7 +7,6 @@
 
 #include "JetpackClient.hpp"
 #include "client.hpp"
-#include <chrono>
 #include <cmath>
 #include <cstddef>
 #include <cstdlib>
@@ -15,23 +14,21 @@
 #include <functional>
 #include <iostream>
 #include <map>
-#include <sstream>
 #include <string>
-#include <thread>
 
-void client::JetpackClient::handleWaitingPlayers()
+void client::JetpackClient::_handleWaitingPlayers()
 {
     std::cout << "Waiting Player\n";
     this->_state = CLIENT_STATE::WAITING;
 }
 
-void client::JetpackClient::startMap()
+void client::JetpackClient::_startMap()
 {
     std::cout << "MAP START\n";
-    this->_retrieveMap = true;
+    this->_MapIsRetrieve = true;
 }
 
-void client::JetpackClient::retrieveMap(const std::string &map)
+void client::JetpackClient::_retrieveMap(const std::string &map)
 {
     size_t starting = 0;
     size_t value = 0;
@@ -48,13 +45,13 @@ void client::JetpackClient::retrieveMap(const std::string &map)
     }
 }
 
-void client::JetpackClient::endMap()
+void client::JetpackClient::_endMap()
 {
     std::cout << "MAP END\n";
-    this->_retrieveMap = false;
+    this->_MapIsRetrieve = false;
 }
 
-void client::JetpackClient::startGame()
+void client::JetpackClient::_startGame()
 {
     std::cout << "START GAME\n";
     this->_state = CLIENT_STATE::PLAYING;
@@ -107,37 +104,8 @@ void client::JetpackClient::_retrieveCoin()
     }
 }
 
-void client::JetpackClient::handleDisplay()
+void client::JetpackClient::_gameRunning(const std::string &currentData)
 {
-    std::map<std::string, std::function<void()>> instructions{
-        {"WAITING_PLAYERS",
-            [this] {
-                handleWaitingPlayers();
-            }},
-        {"START_MAP",
-            [this] {
-                startMap();
-            }},
-        {"END_MAP",
-            [this] {
-                endMap();
-            }},
-        {"GAME_START:0",
-            [this] {
-                startGame();
-            }},
-        {"GAME_START:1",
-            [this] {
-                startGame();
-            }},
-    };
-    {
-        std::lock_guard<std::mutex> lock(this->data_mutex);
-        if (this->_data.empty()) {
-            return;
-        }
-    }
-    std::string currentData = this->_data.front();
     if (this->_state == CLIENT_STATE::PLAYING) {
         this->_updatePlayerPosition(currentData);
         if (currentData.find("GAME_END") != std::string::npos) {
@@ -150,26 +118,61 @@ void client::JetpackClient::handleDisplay()
             this->_msg.push("PRESSED");
         return;
     }
+
+}
+
+void client::JetpackClient::_handleDisplay()
+{
+    std::map<std::string, std::function<void()>> instructions{
+        {"WAITING_PLAYERS",
+            [this] {
+                _handleWaitingPlayers();
+            }},
+        {"START_MAP",
+            [this] {
+                _startMap();
+            }},
+        {"END_MAP",
+            [this] {
+                _endMap();
+            }},
+        {"GAME_START:0",
+            [this] {
+                _startGame();
+            }},
+        {"GAME_START:1",
+            [this] {
+                _startGame();
+            }},
+    };
+    {
+        std::lock_guard<std::mutex> lock(this->data_mutex);
+        if (this->_data.empty()) {
+            return;
+        }
+    }
+    std::string currentData = this->_data.front();
+    this->_gameRunning(currentData);
     for (const auto &it : instructions) {
         if (currentData == it.first) {
             it.second();
             this->_data.pop();
             break;
         }
-        if (this->_retrieveMap) {
-            this->retrieveMap(currentData);
+        if (this->_MapIsRetrieve) {
+            this->_retrieveMap(currentData);
             this->_data.pop();
             break;
         }
     }
 }
 
-void client::JetpackClient::runDisplayThread()
+void client::JetpackClient::_runDisplayThread()
 {
     try {
         this->_displayEngine.activateWindow();
         while (this->_running) {
-            this->handleDisplay();
+            this->_handleDisplay();
         }
     } catch (...) {
         exit(RET_FAILURE);
