@@ -220,12 +220,10 @@ void client::Display::_drawAth(const Player &player)
 
     std::stringstream stream;
     if (player.getPlayerAlive()) {
-        stream << "SCORE: " << player.getScore()
-               << "\n";
+        stream << "SCORE: " << player.getScore() << "\n";
     } else {
         stream << "DEAD\n";
-        stream << "FINAL SCORE: " << player.getScore()
-               << "\n";
+        stream << "FINAL SCORE: " << player.getScore() << "\n";
     }
 
     text.setString(stream.str());
@@ -285,12 +283,16 @@ void client::Display::_drawProps(
 
             if (tile == 'c') {
                 auto &sprite = *this->_coin[coinFrame];
-                sprite.setPosition(position);
+                auto bounds = sprite.getLocalBounds();
+                sprite.setOrigin(bounds.width / 2.0, bounds.height / 2.0);
+                sprite.setPosition(position.x + (width / 2.0), position.y + (height / 2));
                 this->_window->draw(sprite);
             }
             if (tile == 'e') {
                 auto &sprite = *this->_laser[laserFrame];
-                sprite.setPosition(position);
+                auto bounds = sprite.getLocalBounds();
+                sprite.setOrigin(bounds.width / 2.0, bounds.height / 2.0);
+                sprite.setPosition(position.x + (width / 2.0), position.y + (height / 2));
                 this->_window->draw(sprite);
             }
         }
