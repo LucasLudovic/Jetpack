@@ -71,15 +71,13 @@ static long compute_last_time(player_t *player, struct timespec *current_time)
     return time_since_last_ask;
 }
 
-static int check_collision(
-    server_t *server, player_t *player, vector2_t *last_position)
+static int check_collision(server_t *server, player_t *player)
 {
-    if (server->map[(size_t)player->position.y][(size_t)player->position.x] ==
-            'e' &&
-        (size_t)last_position->x != (size_t)player->position.x &&
-        (size_t)last_position->y != (size_t)player->position.y) {
+    if (server->map[MAP_HEIGHT - 1 - (size_t)player->position.y]
+        [(size_t)player->position.x] == 'e') {
         player->is_alive = FALSE;
         player->ended = TRUE;
+        send(player->socket->fd, "DIED\r\n", strlen("DIED\r\n"), 0);
         return TRUE;
     }
     return FALSE;
@@ -94,18 +92,10 @@ void move_up(server_t *server, player_t *player)
 
     clock_gettime(CLOCK_MONOTONIC, &current_time);
     time_since_last_ask = compute_last_time(player, &current_time);
-    if (player->ended == TRUE) {
-        send(player->socket->fd, "GAME_END\r\n", strlen("GAME_END\r\n"), 0);
-        return;
-    }
     last_position.x = player->position.x;
     last_position.y = player->position.y;
     set_up_pos(server, player, time_since_last_ask);
     check_coin(server, player, &last_position);
-    if (check_collision(server, player, &last_position) == TRUE) {
-        send(player->socket->fd, "DIED\r\n", strlen("DIED\r\n"), 0);
-        return;
-    }
     player->time_last_ask = current_time;
     snprintf(buff, BUFFSIZE, "position:x=%f:y=%f\r\n", player->position.x,
         player->position.y);
@@ -121,10 +111,6 @@ void send_pos(server_t *server, player_t *player)
 
     clock_gettime(CLOCK_MONOTONIC, &current_time);
     time_since_last_ask = compute_last_time(player, &current_time);
-    if (player->ended == TRUE) {
-        send(player->socket->fd, "GAME_END\r\n", strlen("GAME_END\r\n"), 0);
-        return;
-    }
     last_position.x = player->position.x;
     last_position.y = player->position.y;
     set_down_pos(server, player, time_since_last_ask);
@@ -133,6 +119,17 @@ void send_pos(server_t *server, player_t *player)
     snprintf(buff, BUFFSIZE, "position:x=%f:y=%f\r\n", player->position.x,
         player->position.y);
     send(player->socket->fd, buff, strlen(buff), 0);
+}
+
+static int check_early_return(server_t *server, player_t *player)
+{
+    if (player->ended == TRUE)
+        return TRUE;
+    if (server->game_state != STARTED)
+        return TRUE;
+    if (check_collision(server, player))
+        return TRUE;
+    return FALSE;
 }
 
 int execute_instructions(server_t *server, player_t *player, size_t i)
@@ -146,7 +143,7 @@ int execute_instructions(server_t *server, player_t *player, size_t i)
         server->remove_player(server, i);
         return FAILURE;
     }
-    if (server->game_state != STARTED)
+    if (check_early_return(server, player) == TRUE)
         return SUCCESS;
     for (size_t i = 0; commands[i].name != NULL; i += 1) {
         if (strcmp(commands[i].name, buff) == 0) {
