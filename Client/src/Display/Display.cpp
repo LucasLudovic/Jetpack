@@ -221,14 +221,10 @@ void client::Display::_drawAth(const Player &player)
     std::stringstream stream;
     if (player.getPlayerAlive()) {
         stream << "SCORE: " << player.getScore()
-               << std::string(
-                      18 - std::to_string(player.getScore()).size(), ' ')
                << "\n";
     } else {
         stream << "DEAD\n";
         stream << "FINAL SCORE: " << player.getScore()
-               << std::string(
-                      10 - std::to_string(player.getScore()).size(), ' ')
                << "\n";
     }
 
