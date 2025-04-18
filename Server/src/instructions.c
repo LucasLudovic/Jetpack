@@ -22,6 +22,12 @@ const command_t commands[] = {
 static void set_up_pos(
     server_t *server, player_t *player, long time_since_last_ask)
 {
+    char msg[BUFFSIZE] = {0};
+    const ssize_t p1_score =
+        server->players[0] ? server->players[0]->score : -1;
+    const ssize_t p2_score =
+        server->players[1] ? server->players[1]->score : -1;
+
     player->position.y += 0.05 * time_since_last_ask;
     player->position.x += 0.02 * time_since_last_ask;
     if (player->position.y > MAP_HEIGHT - 1) {
@@ -30,12 +36,21 @@ static void set_up_pos(
     if (player->position.x > strlen(server->map[0]) - 1) {
         player->position.x = strlen(server->map[0]) - 1;
         player->ended = TRUE;
+        snprintf(
+            msg, BUFFSIZE, "GAME_END:p1%ld:p2%ld\r\n", p1_score, p2_score);
+        send(player->socket->fd, msg, strlen(msg), 0);
     }
 }
 
 static void set_down_pos(
     server_t *server, player_t *player, long time_since_last_ask)
 {
+    char msg[BUFFSIZE] = {0};
+    const ssize_t p1_score =
+        server->players[0] ? server->players[0]->score : -1;
+    const ssize_t p2_score =
+        server->players[1] ? server->players[1]->score : -1;
+
     player->position.y -= 0.05 * time_since_last_ask;
     player->position.x += 0.02 * time_since_last_ask;
     if (player->position.y < 0)
@@ -46,6 +61,9 @@ static void set_down_pos(
     if (player->position.x > strlen(server->map[0]) - 1) {
         player->position.x = strlen(server->map[0]) - 1;
         player->ended = TRUE;
+        snprintf(
+            msg, BUFFSIZE, "GAME_END:p1%ld:p2%ld\r\n", p1_score, p2_score);
+        send(player->socket->fd, msg, strlen(msg), 0);
     }
 }
 
@@ -53,7 +71,7 @@ static void check_coin(
     server_t *server, player_t *player, vector2_t *last_position)
 {
     if (server->map[MAP_HEIGHT - 1 - (size_t)player->position.y]
-                   [(size_t)player->position.x] == 'c' &&
+        [(size_t)player->position.x] == 'c' &&
         (size_t)last_position->x != (size_t)player->position.x &&
         (size_t)last_position->y != (size_t)player->position.y) {
         if (player->position.x / 1 > 0.2) {
@@ -121,8 +139,8 @@ void send_pos(server_t *server, player_t *player)
     set_down_pos(server, player, time_since_last_ask);
     check_coin(server, player, &last_position);
     player->time_last_ask = current_time;
-    snprintf(buff, BUFFSIZE, "position:x=%f:y=%f:s=%zu\r\n", player->position.x,
-        player->position.y, player->score);
+    snprintf(buff, BUFFSIZE, "position:x=%f:y=%f:s=%zu\r\n",
+        player->position.x, player->position.y, player->score);
     send(player->socket->fd, buff, strlen(buff), 0);
 }
 
