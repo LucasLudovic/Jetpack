@@ -7,6 +7,7 @@
 
 #include "JetpackClient.hpp"
 #include "client.hpp"
+#include <cmath>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
@@ -75,11 +76,33 @@ void client::JetpackClient::_updatePlayerPosition(const std::string &pos)
 
 void client::JetpackClient::_retrieveCoin()
 {
-    auto playerX = static_cast<int>(this->_player.getPosX());
-    auto playerY = static_cast<int>(this->_player.getPosY());
+    const float playerX = this->_player.getPosX();
+    const float playerY = this->_player.getPosY();
 
-    if (this->_map[9 - playerY][playerX] == 'c') {
-        this->_map[9 - playerY][playerX] = '_';
+    const float hitboxWidth = 0.7;
+    const float hitboxHeight = 0.7;
+
+    const float left = playerX - (hitboxWidth / 2.0);
+    const float right = playerX + (hitboxWidth / 2.0);
+    const float bottom = playerY - (hitboxHeight / 2.0);
+    const float top = playerY + (hitboxHeight / 2.0);
+
+    const int startX = static_cast<int>(left);
+    const int endX = static_cast<int>(right);
+    const int startY = static_cast<int>(bottom);
+    const int endY = static_cast<int>(top);
+
+    for (int y = startY; y <= endY; ++y) {
+        for (int x = startX; x <= endX; ++x) {
+            int mapY = 9 - y;
+            if (mapY >= 0 && mapY < static_cast<int>(_map.size()) && x >= 0 &&
+                x < static_cast<int>(_map[0].size())) {
+
+                if (_map[mapY][x] == 'c') {
+                    _map[mapY][x] = '_';
+                }
+            }
+        }
     }
 }
 
@@ -118,7 +141,7 @@ void client::JetpackClient::handleDisplay()
         this->_updatePlayerPosition(currentData);
         if (currentData == "GAME_END") {
             std::cout << "Game End" << std::endl;
-            exit (0);
+            exit(0);
         }
         if (currentData == "DIED")
             this->_player.setPlayerAlive(false);
@@ -151,6 +174,6 @@ void client::JetpackClient::runDisplayThread()
             this->handleDisplay();
         }
     } catch (...) {
-        exit (RET_FAILURE);
+        exit(RET_FAILURE);
     }
 }

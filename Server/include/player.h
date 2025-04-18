@@ -8,9 +8,10 @@
 #ifndef PLAYER_H_
     #define PLAYER_H_
 
+    #include "map.h"
     #include <netinet/in.h>
-    #include <stdint.h>
     #include <stddef.h>
+    #include <stdint.h>
 
 typedef struct vector2_s {
     double x;
@@ -22,6 +23,7 @@ typedef struct player_s {
     int ended;
     uint8_t is_alive;
     vector2_t position;
+    char *map[MAP_HEIGHT];
     struct timespec time_last_ask;
 
     struct pollfd *socket;
