@@ -22,8 +22,8 @@ const command_t commands[] = {
 static void set_up_pos(
     server_t *server, player_t *player, long time_since_last_ask)
 {
-    player->position.y += 0.2 * time_since_last_ask;
-    player->position.x += 0.2 * time_since_last_ask;
+    player->position.y += 0.05 * time_since_last_ask;
+    player->position.x += 0.02 * time_since_last_ask;
     if (player->position.y > MAP_HEIGHT - 1) {
         player->position.y = MAP_HEIGHT - 1;
     }
@@ -36,8 +36,8 @@ static void set_up_pos(
 static void set_down_pos(
     server_t *server, player_t *player, long time_since_last_ask)
 {
-    player->position.y -= 0.2 * time_since_last_ask;
-    player->position.x += 0.2 * time_since_last_ask;
+    player->position.y -= 0.05 * time_since_last_ask;
+    player->position.x += 0.02 * time_since_last_ask;
     if (player->position.y < 0)
         player->position.y = 0;
     if (player->position.y >= MAP_HEIGHT - 1) {
@@ -67,8 +67,22 @@ static long compute_last_time(player_t *player, struct timespec *current_time)
     time_since_last_ask =
         ((current_time->tv_sec - player->time_last_ask.tv_sec) * 1000) +
         ((current_time->tv_nsec - player->time_last_ask.tv_nsec) / 1000000);
-    time_since_last_ask /= 100;
+    time_since_last_ask /= 10;
     return time_since_last_ask;
+}
+
+static int check_collision(
+    server_t *server, player_t *player, vector2_t *last_position)
+{
+    if (server->map[(size_t)player->position.y][(size_t)player->position.x] ==
+            'e' &&
+        (size_t)last_position->x != (size_t)player->position.x &&
+        (size_t)last_position->y != (size_t)player->position.y) {
+        player->is_alive = FALSE;
+        player->ended = TRUE;
+        return TRUE;
+    }
+    return FALSE;
 }
 
 void move_up(server_t *server, player_t *player)
@@ -88,6 +102,10 @@ void move_up(server_t *server, player_t *player)
     last_position.y = player->position.y;
     set_up_pos(server, player, time_since_last_ask);
     check_coin(server, player, &last_position);
+    if (check_collision(server, player, &last_position) == TRUE) {
+        send(player->socket->fd, "DIED\r\n", strlen("DIED\r\n"), 0);
+        return;
+    }
     player->time_last_ask = current_time;
     snprintf(buff, BUFFSIZE, "position:x=%f:y=%f\r\n", player->position.x,
         player->position.y);
