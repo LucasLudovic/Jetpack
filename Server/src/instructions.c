@@ -113,9 +113,6 @@ static void send_death(server_t *server)
     const char msgLose[] = "LOSE\r\n";
     player_t *player = NULL;
 
-    if (server->game_state != ENDED) {
-        return;
-    }
     for (size_t i = 0; i < server->nb_player; i += 1) {
         player = server->players[i];
         if (player == NULL)
@@ -231,7 +228,7 @@ int execute_instructions(server_t *server, player_t *player, size_t i)
             return SUCCESS;
         }
     }
-    send_death(server);
+    send_end(server);
     send(player->socket->fd, unknown, strlen(unknown), 0);
     return SUCCESS;
 }
