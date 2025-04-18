@@ -65,7 +65,6 @@ void client::JetpackClient::_updatePlayerPosition(const std::string &pos)
         size_t value2 = pos.find(":y=");
         std::string posX = pos.substr(value + 3, value2 - value - 3);
         std::string posY = pos.substr(value2 + 3);
-        std::stringstream convertValue;
         this->_player.setPosX(std::atof(posX.c_str()));
         this->_player.setPosY(std::atof(posY.c_str()));
     }
@@ -114,6 +113,8 @@ void client::JetpackClient::handleDisplay()
     std::string currentData = this->_data.front();
     if (this->_state == CLIENT_STATE::PLAYING) {
         this->_updatePlayerPosition(currentData);
+        if (currentData == "GAME_END")
+            exit (0);
         this->_retrieveCoin();
         this->_displayEngine.renderFrame(this->_player, this->_map);
         this->_data.pop();
