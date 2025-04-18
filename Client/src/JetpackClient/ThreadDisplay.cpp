@@ -63,10 +63,13 @@ void client::JetpackClient::_updatePlayerPosition(const std::string &pos)
     if (pos.find("position:") != std::string::npos) {
         size_t value = pos.find(":x=");
         size_t value2 = pos.find(":y=");
+        size_t value3 = pos.find(":s=");
         std::string posX = pos.substr(value + 3, value2 - value - 3);
-        std::string posY = pos.substr(value2 + 3);
+        std::string posY = pos.substr(value2 + 3, value3 - value2 - 3);
+        std::string score = pos.substr(value3 + 3);
         this->_player.setPosX(std::atof(posX.c_str()));
         this->_player.setPosY(std::atof(posY.c_str()));
+        this->_player.setScore(std::atoi(score.c_str()));
     }
 }
 
@@ -117,6 +120,8 @@ void client::JetpackClient::handleDisplay()
             std::cout << "Game End" << std::endl;
             exit (0);
         }
+        if (currentData == "DIED")
+            this->_player.setPlayerAlive(false);
         this->_retrieveCoin();
         this->_displayEngine.renderFrame(this->_player, this->_map);
         this->_data.pop();
