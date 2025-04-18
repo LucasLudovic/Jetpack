@@ -63,10 +63,6 @@ static long compute_last_time(player_t *player, struct timespec *current_time)
 static void set_up_pos(
     server_t *server, player_t *player, long time_since_last_ask)
 {
-    char msg[BUFFSIZE] = {0};
-    const size_t p1_score = server->players[0] ? server->players[0]->score : 0;
-    const size_t p2_score = server->players[1] ? server->players[1]->score : 0;
-
     player->position.y += 0.05 * time_since_last_ask;
     player->position.x += 0.02 * time_since_last_ask;
     if (player->position.y > MAP_HEIGHT - 1) {
@@ -75,19 +71,12 @@ static void set_up_pos(
     if (player->position.x > strlen(server->map[0]) - 1) {
         player->position.x = strlen(server->map[0]) - 1;
         player->ended = TRUE;
-        snprintf(
-            msg, BUFFSIZE, "GAME_END:p1%lu:p2%lu\r\n", p1_score, p2_score);
-        send(player->socket->fd, msg, strlen(msg), 0);
     }
 }
 
 static void set_down_pos(
     server_t *server, player_t *player, long time_since_last_ask)
 {
-    char msg[BUFFSIZE] = {0};
-    const size_t p1_score = server->players[0] ? server->players[0]->score : 0;
-    const size_t p2_score = server->players[1] ? server->players[1]->score : 0;
-
     player->position.y -= 0.05 * time_since_last_ask;
     player->position.x += 0.02 * time_since_last_ask;
     if (player->position.y < 0)
@@ -98,9 +87,6 @@ static void set_down_pos(
     if (player->position.x > (double)strlen(server->map[0]) - 1) {
         player->position.x = (double)strlen(server->map[0]) - 1;
         player->ended = TRUE;
-        snprintf(
-            msg, BUFFSIZE, "GAME_END:p1%lu:p2%lu\r\n", p1_score, p2_score);
-        send(player->socket->fd, msg, strlen(msg), 0);
     }
 }
 
@@ -127,13 +113,15 @@ void send_pos(server_t *server, player_t *player)
     char buff[BUFFSIZE];
     struct timespec current_time = {0};
     long time_since_last_ask = 0;
+    size_t score1 = server->players[0]->score;
+    size_t score2 = server->players[1]->score;
 
     clock_gettime(CLOCK_MONOTONIC, &current_time);
     time_since_last_ask = compute_last_time(player, &current_time);
     set_down_pos(server, player, time_since_last_ask);
     check_coin(player);
     player->time_last_ask = current_time;
-    snprintf(buff, BUFFSIZE, "position:x=%f:y=%f:s=%zu\r\n",
-        player->position.x, player->position.y, player->score);
+    snprintf(buff, BUFFSIZE, "position:x=%f:y=%f:s1=%zu,s2=%zu\r\n",
+        player->position.x, player->position.y, score1, score2);
     send(player->socket->fd, buff, strlen(buff), 0);
 }
