@@ -52,7 +52,7 @@ static void set_down_pos(
 static void check_coin(
     server_t *server, player_t *player, vector2_t *last_position)
 {
-    if (server->map[(size_t)player->position.y][(size_t)player->position.x] ==
+    if (server->map[MAP_HEIGHT - 1 - (size_t)player->position.y][(size_t)player->position.x] ==
             'c' &&
         (size_t)last_position->x != (size_t)player->position.x &&
         (size_t)last_position->y != (size_t)player->position.y) {
