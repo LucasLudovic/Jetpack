@@ -225,7 +225,7 @@ void client::Display::_drawAth(const Player &player)
                       18 - std::to_string(player.getScore()).size(), ' ')
                << "\n";
     } else {
-        stream << "      *** DEAD ***      \n";
+        stream << "DEAD\n";
         stream << "FINAL SCORE: " << player.getScore()
                << std::string(
                       10 - std::to_string(player.getScore()).size(), ' ')
