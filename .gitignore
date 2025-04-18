@@ -5,8 +5,8 @@ jetpack_server
 *.o
 compile_commands.json
 .cache
-map/
 map.txt
 jetpack.tar.gz
 basic.map
 zip/
+coding-style-reports.log
