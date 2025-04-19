@@ -204,28 +204,28 @@ void client::Display::_loadPlayerDieAssets()
 }
 
 void client::Display::renderFrame(
-    const Player &player, const std::vector<std::string> &map)
+    const Player &player, const Player &player2, const std::vector<std::string> &map)
 {
-    // this->_startX = player.getPosX();
     this->_startX = player.getPosX() - (this->_endX - this->_startX) / 2.0;
     this->_endX = this->_startX + 10;
 
     this->_window->clear();
     this->_drawBackground();
     this->_drawProps(player, map);
+    this->_drawPlayer(player2, map);
     this->_drawPlayer(player, map);
-    this->_drawAth(player);
+    this->_drawAth(player, player2);
     this->_window->display();
 }
 
-void client::Display::renderEndGame(const Player &player)
+void client::Display::renderEndGame(const Player &player, const Player &player2)
 {
     this->_window->clear();
-    this->_drawEnd(player);
+    this->_drawEnd(player, player2);
     this->_window->display();
 }
 
-void client::Display::_drawEnd(const Player &player)
+void client::Display::_drawEnd(const Player &player, const Player &player2)
 {
     sf::Text text;
     text.setFont(*this->_font);
@@ -235,11 +235,11 @@ void client::Display::_drawEnd(const Player &player)
     if (player.getPlayerWin()) {
         stream << "WIN :)\n";
         stream << "SCORE: " << player.getScore() << "\n";
-        stream << "Score other player: " << player.getScoreOtherPlayer() << '\n';
+        stream << "Opponent player: " << player2.getScore() << '\n';
     } else {
         stream << "Lose (Skill Issue)\n";
         stream << "FINAL SCORE: " << player.getScore() << "\n";
-        stream << "Score other player: " << player.getScoreOtherPlayer() << '\n';
+        stream << "Opponent player: " << player2.getScore() << '\n';
     }
 
     text.setString(stream.str());
@@ -248,14 +248,15 @@ void client::Display::_drawEnd(const Player &player)
     this->_window->draw(text);
 }
 
-void client::Display::_drawAth(const Player &player)
+void client::Display::_drawAth(const Player &player, const Player &player2)
 {
     sf::Text text;
     text.setFont(*this->_font);
     text.setCharacterSize(24);
 
     std::stringstream stream;
-    stream << "SCORE: " << player.getScore() << "\n";
+    stream << "SCORE: " << player.getScore() << '\n';
+    stream << "OPPONENT SCORE: " << player2.getScore() << '\n';
 
     text.setString(stream.str());
     text.setPosition(20, 20);
@@ -371,7 +372,10 @@ void client::Display::_drawPlayer(
     }
     playerSprite->setPosition(playerStartX - (tileWidth / 2),
         (map.size() - 1 - player.getPosY()) * tileHeight);
+    if (player.getPlayerTransparency())
+        playerSprite->setColor(sf::Color(0,0,0, 120));
     this->_window->draw(*playerSprite);
+    playerSprite->setColor(sf::Color(255, 255, 255, 255));
 
     if (player.getPosY() > 0) {
         this->_playerFlight[flightFrame] = std::move(playerSprite);

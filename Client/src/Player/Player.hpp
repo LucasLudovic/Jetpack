@@ -23,11 +23,11 @@ namespace client {
 
         void setScore(size_t value) { this->_score = value; };
 
-        void setScoreOtherPlayer(size_t value) { this->_scoreOtherPlayer = value; };
-
         void setPlayerWin(bool value) { this->_hasWin = value; }
 
         void setPlayerNumber(ssize_t value) { this->_playerNumber = value; }
+
+        void setPlayerTransparency(bool value) { this->_playerTransparency = value; }
 
         [[nodiscard]] float getPosX() const { return this->_posX; };
 
@@ -39,15 +39,14 @@ namespace client {
 
         [[nodiscard]] ssize_t getPlayerNumber() const { return this->_playerNumber; };
 
-        [[nodiscard]] size_t getScoreOtherPlayer() const { return this->_scoreOtherPlayer; };
+        [[nodiscard]] bool getPlayerTransparency() const { return this->_playerTransparency; };
 
        private:
         float _posX = 0;
         float _posY = 0;
         size_t _score = 0;
-        size_t _scoreOtherPlayer = 0;
         bool _hasWin = false;
         ssize_t _playerNumber = 0;
-        std::vector<size_t> _otherScore;
+        bool _playerTransparency = false;
     };
 }  // namespace client

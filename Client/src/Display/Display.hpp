@@ -34,8 +34,8 @@ namespace client {
         ~Display();
 
         void renderFrame(
-            const Player &player, const std::vector<std::string> &map);
-        void renderEndGame(const Player &player);
+            const Player &player, const Player &player2, const std::vector<std::string> &map);
+        void renderEndGame(const Player &player, const Player &player2);
 
         bool handleEvent();
 
@@ -80,7 +80,7 @@ namespace client {
             const Player &player, const std::vector<std::string> &map);
         void _drawProps(
             const Player &player, const std::vector<std::string> &map);
-        void _drawAth(const Player &player);
-        void _drawEnd(const Player &player);
+        void _drawAth(const Player &player, const Player &player2);
+        void _drawEnd(const Player &player, const Player &player2);
     };
 }  // namespace client

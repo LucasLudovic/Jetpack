@@ -50,6 +50,7 @@ namespace client {
         client::Network _network;
         client::Display _displayEngine;
         Player _player;
+        Player _player2;
         bool _MapIsRetrieve;
         std::vector<std::string> _map;
 
