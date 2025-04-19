@@ -87,7 +87,7 @@ static void send_end(server_t *server)
 
 static int check_line_laser(server_t *server, player_t *player, int line)
 {
-    const float hitbox_width = 0.5;
+    const float hitbox_width = 0.9;
     const float left = player->position.x - (hitbox_width / 2.0);
     const float right = player->position.x + (hitbox_width / 2.0);
     const int start_x = (int)left;
