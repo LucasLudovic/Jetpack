@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "Inputs/Inputs.hpp"
 #include "Player/Player.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -52,7 +51,6 @@ namespace client {
 
         std::unique_ptr<sf::RenderWindow> _window = nullptr;
         std::unique_ptr<sf::Font> _font = nullptr;
-        std::vector<client::Inputs> _events;
 
         sf::Texture _coinTexture;
         sf::Texture _laserTexture;
