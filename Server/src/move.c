@@ -95,9 +95,13 @@ void move_up(server_t *server, player_t *player)
     char buff[BUFFSIZE];
     struct timespec current_time = {0};
     long time_since_last_ask = 0;
-    size_t score1 = server->players[0]->score;
-    size_t score2 = server->players[1]->score;
+    size_t score1 = 0;
+    size_t score2 = 0;
 
+    if (server->players[0])
+        score1 = server->players[0]->score;
+    if (server->players[1])
+        score2 = server->players[1]->score;
     clock_gettime(CLOCK_MONOTONIC, &current_time);
     time_since_last_ask = compute_last_time(player, &current_time);
     set_up_pos(server, player, time_since_last_ask);
@@ -113,9 +117,13 @@ void send_pos(server_t *server, player_t *player)
     char buff[BUFFSIZE];
     struct timespec current_time = {0};
     long time_since_last_ask = 0;
-    size_t score1 = server->players[0]->score;
-    size_t score2 = server->players[1]->score;
+    size_t score1 = 0;
+    size_t score2 = 0;
 
+    if (server->players[0])
+        score1 = server->players[0]->score;
+    if (server->players[1])
+        score2 = server->players[1]->score;
     clock_gettime(CLOCK_MONOTONIC, &current_time);
     time_since_last_ask = compute_last_time(player, &current_time);
     set_down_pos(server, player, time_since_last_ask);

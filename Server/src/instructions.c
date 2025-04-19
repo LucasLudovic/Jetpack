@@ -42,28 +42,38 @@ static void send_draw(server_t *server)
 {
     const char msgDraw[] = "DRAW\r\n";
 
-    send(server->players[1]->socket->fd, msgDraw, strlen(msgDraw), 0);
-    send(server->players[0]->socket->fd, msgDraw, strlen(msgDraw), 0);
+    if (server->players[1])
+        send(server->players[1]->socket->fd, msgDraw, strlen(msgDraw), 0);
+    if (server->players[0])
+        send(server->players[0]->socket->fd, msgDraw, strlen(msgDraw), 0);
 }
 
 static void send_end(server_t *server)
 {
     const char msgWin[] = "WIN\r\n";
     const char msgLose[] = "LOSE\r\n";
-    const size_t score1 = server->players[0]->score;
-    const size_t score2 = server->players[1]->score;
+    size_t score1 = 0;
+    size_t score2 = 0;
 
+    if (server->players[0])
+        score1 = server->players[0]->score;
+    if (server->players[1])
+        score2 = server->players[1]->score;
     for (size_t i = 0; i < server->nb_player; i += 1)
         if (server->players[i]->is_alive == TRUE)
             return;
     if (score1 > score2) {
-        send(server->players[0]->socket->fd, msgWin, strlen(msgWin), 0);
-        send(server->players[1]->socket->fd, msgLose, strlen(msgLose), 0);
+        if (server->players[0])
+            send(server->players[0]->socket->fd, msgWin, strlen(msgWin), 0);
+        if (server->players[1])
+            send(server->players[1]->socket->fd, msgLose, strlen(msgLose), 0);
         return;
     }
     if (score1 < score2) {
-        send(server->players[1]->socket->fd, msgWin, strlen(msgWin), 0);
-        send(server->players[0]->socket->fd, msgLose, strlen(msgLose), 0);
+        if (server->players[1])
+            send(server->players[1]->socket->fd, msgWin, strlen(msgWin), 0);
+        if (server->players[0])
+            send(server->players[0]->socket->fd, msgLose, strlen(msgLose), 0);
         return;
     }
     send_draw(server);
