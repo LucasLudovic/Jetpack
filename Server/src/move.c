@@ -90,7 +90,8 @@ static void set_down_pos(
     }
 }
 
-static double get_other_data(server_t *server, player_t *player, size_t *score1, size_t *score2)
+static double get_other_data(
+    server_t *server, player_t *player, size_t *score1, size_t *score2)
 {
     double posY2 = 0;
 
