@@ -52,7 +52,7 @@ void client::Display::deactivateWindow()
 bool client::Display::handleEvent()
 {
     sf::Event sfmlEvent;
-    bool Event;
+    static bool Event = false;
 
     while (this->_window->pollEvent(sfmlEvent)) {
         switch (sfmlEvent.type) {
@@ -60,6 +60,10 @@ bool client::Display::handleEvent()
                 if (sfmlEvent.key.code == sf::Keyboard::Q)
                     exit (0);
                 Event = true;
+                break;
+            }
+            case sf::Event::KeyReleased: {
+                Event = false;
                 break;
             }
             default:
