@@ -15,6 +15,22 @@
 #include <iostream>
 #include <string>
 
+static int checkEnv(char **env)
+{
+    size_t envChecker = 0;
+    if (env == nullptr)
+        return RET_FAILURE;
+    for (int i = 0; env[i] != nullptr; i += 1) {
+        if (strncmp(env[i], "DISPLAY=", 8) == 0)
+            envChecker += 1;
+        if (strncmp(env[i], "TERM=", 5) == 0)
+            envChecker += 1;
+    }
+    if (envChecker < 2)
+        return RET_FAILURE;
+    return RET_SUCCESS;
+}
+
 static std::string retrievePort(const char *argv[])
 {
     std::string str;
@@ -67,13 +83,15 @@ static std::string retrieveIP(const char *argv[])
     return str;
 }
 
-uint8_t launchClient(const int argc, char const *argv[])
+uint8_t launchClient(const int argc, char const *argv[], char **env)
 {
     if (argc < 5)
         return RET_FAILURE;
     std::string ip = retrieveIP(argv);
     std::string port = retrievePort(argv);
     bool debugMode = retrieveDebug(argv);
+    if (checkEnv(env) == RET_FAILURE)
+        return RET_FAILURE;
     try {
         client::JetpackClient NewClient(ip, port, debugMode);
         NewClient.runClient();
