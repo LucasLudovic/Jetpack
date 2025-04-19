@@ -8,10 +8,12 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <sys/types.h>
-#include <vector>
 
 namespace client {
+    enum class WIN_STATE : std::uint8_t { WIN, LOSE, DRAW, UNDEFINED };
+
     class Player {
        public:
         Player() = default;
@@ -23,7 +25,7 @@ namespace client {
 
         void setScore(size_t value) { this->_score = value; };
 
-        void setPlayerWin(bool value) { this->_hasWin = value; }
+        void setPlayerWin(WIN_STATE value) { this->_hasWin = value; }
 
         void setPlayerNumber(ssize_t value) { this->_playerNumber = value; }
 
@@ -35,7 +37,7 @@ namespace client {
 
         [[nodiscard]] size_t getScore() const { return this->_score; };
 
-        [[nodiscard]] bool getPlayerWin() const { return this->_hasWin; };
+        [[nodiscard]] WIN_STATE getPlayerWin() const { return this->_hasWin; };
 
         [[nodiscard]] ssize_t getPlayerNumber() const { return this->_playerNumber; };
 
@@ -45,7 +47,7 @@ namespace client {
         float _posX = 0;
         float _posY = 0;
         size_t _score = 0;
-        bool _hasWin = false;
+        WIN_STATE _hasWin = WIN_STATE::UNDEFINED;
         ssize_t _playerNumber = 0;
         bool _playerTransparency = false;
     };

@@ -6,13 +6,13 @@
 //
 
 #include "JetpackClient.hpp"
+#include "Player/Player.hpp"
 #include "client.hpp"
 #include <cmath>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
 #include <functional>
-#include <iostream>
 #include <map>
 #include <string>
 
@@ -131,13 +131,19 @@ void client::JetpackClient::_gameRunning(const std::string &currentData)
     if (this->_state == CLIENT_STATE::PLAYING) {
         this->_updatePlayerPosition(currentData);
         if (currentData.find("WIN") != std::string::npos) {
-            this->_player.setPlayerWin(true);
+            this->_player.setPlayerWin(WIN_STATE::WIN);
             this->_displayEngine.renderEndGame(this->_player, this->_player2);
             this->_displayEngine.handleEvent();
             return;
         }
         if (currentData.find("LOSE") != std::string::npos) {
-            this->_player.setPlayerWin(false);
+            this->_player.setPlayerWin(WIN_STATE::LOSE);
+            this->_displayEngine.renderEndGame(this->_player, this->_player2);
+            this->_displayEngine.handleEvent();
+            return;
+        }
+        if (currentData.find("DRAW") != std::string::npos) {
+            this->_player.setPlayerWin(WIN_STATE::DRAW);
             this->_displayEngine.renderEndGame(this->_player, this->_player2);
             this->_displayEngine.handleEvent();
             return;

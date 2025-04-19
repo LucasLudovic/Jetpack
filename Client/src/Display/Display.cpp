@@ -6,6 +6,7 @@
 //
 
 #include "Display.hpp"
+#include "Player/Player.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -228,12 +229,16 @@ void client::Display::_drawEnd(const Player &player, const Player &player2)
     text.setCharacterSize(24);
 
     std::stringstream stream;
-    if (player.getPlayerWin()) {
+    if (player.getPlayerWin() == WIN_STATE::WIN) {
         stream << "WIN :)\n";
         stream << "SCORE: " << player.getScore() << "\n";
         stream << "Opponent player: " << player2.getScore() << '\n';
-    } else {
+    } else if (player.getPlayerWin() == WIN_STATE::LOSE ){
         stream << "Lose (Skill Issue)\n";
+        stream << "FINAL SCORE: " << player.getScore() << "\n";
+        stream << "Opponent player: " << player2.getScore() << '\n';
+    } else {
+        stream << "Draw (please be better next time)\n";
         stream << "FINAL SCORE: " << player.getScore() << "\n";
         stream << "Opponent player: " << player2.getScore() << '\n';
     }
