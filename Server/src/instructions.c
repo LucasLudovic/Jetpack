@@ -19,7 +19,6 @@
 const command_t commands[] = {
     {"PRESSED\r\n", move_up}, {"GETPOS\r\n", send_pos}, {NULL, NULL}};
 
-
 static void send_death(server_t *server)
 {
     const char msgWin[] = "WIN\r\n";
@@ -60,7 +59,8 @@ static void send_end(server_t *server)
     if (server->players[1])
         score2 = server->players[1]->score;
     for (size_t i = 0; i < server->nb_player; i += 1)
-        if (server->players[i]->is_alive == TRUE)
+        if (server->players[i]->is_alive == TRUE &&
+            server->players[i]->ended != TRUE)
             return;
     if (score1 > score2) {
         if (server->players[0])
@@ -82,7 +82,7 @@ static void send_end(server_t *server)
 static int check_collision(server_t *server, player_t *player)
 {
     if (server->map[MAP_HEIGHT - 1 - (size_t)player->position.y]
-        [(size_t)player->position.x] == 'e') {
+                   [(size_t)player->position.x] == 'e') {
         player->is_alive = FALSE;
         player->ended = TRUE;
         server->game_state = ENDED;
@@ -119,6 +119,7 @@ int execute_instructions(server_t *server, player_t *player, size_t i)
     for (size_t i = 0; commands[i].name != NULL; i += 1) {
         if (strcmp(commands[i].name, buff) == 0) {
             commands[i].function(server, player);
+            send_end(server);
             return SUCCESS;
         }
     }
