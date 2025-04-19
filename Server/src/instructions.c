@@ -85,15 +85,40 @@ static void send_end(server_t *server)
     send_winner(server, score1, score2);
 }
 
+static int check_line_laser(server_t *server, player_t *player, int line)
+{
+    const float hitbox_width = 0.5;
+    const float left = player->position.x - (hitbox_width / 2.0);
+    const float right = player->position.x + (hitbox_width / 2.0);
+    const int start_x = (int)left;
+    const size_t end_x = right < 0 ? 0 : (size_t)right;
+    size_t map_y = MAP_HEIGHT - 1 - line;
+
+    for (size_t x = start_x; x <= end_x; x += 1) {
+        if (line < 0 || x >= strlen(server->map[0]) || line >= MAP_HEIGHT)
+            continue;
+        if (server->map[map_y][x] == 'e') {
+            player->is_alive = FALSE;
+            player->ended = TRUE;
+            server->game_state = ENDED;
+            send_death(server);
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
 static int check_collision(server_t *server, player_t *player)
 {
-    if (server->map[MAP_HEIGHT - 1 - (size_t)player->position.y]
-        [(size_t)player->position.x] == 'e') {
-        player->is_alive = FALSE;
-        player->ended = TRUE;
-        server->game_state = ENDED;
-        send_death(server);
-        return TRUE;
+    const float hitbox_height = 0.7;
+    const float bottom = player->position.y - (hitbox_height / 2.0);
+    const float top = player->position.y + (hitbox_height / 2.0);
+    const int start_y = (int)bottom;
+    const int end_y = (int)top;
+
+    for (int y = start_y; y <= end_y; y += 1) {
+        if (check_line_laser(server, player, y))
+            return TRUE;
     }
     return FALSE;
 }
