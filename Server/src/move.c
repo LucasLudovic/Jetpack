@@ -25,7 +25,7 @@ static void check_line_coin(player_t *player, int line)
     const size_t end_x = right < 0 ? 0 : (size_t)right;
     size_t map_y = 0;
 
-    for (size_t x = start_x; x <= end_x; ++x) {
+    for (size_t x = start_x; x <= end_x; x += 1) {
         if (line < 0 || x >= strlen(player->map[0]) || line >= MAP_HEIGHT)
             continue;
         map_y = MAP_HEIGHT - 1 - (size_t)line;
@@ -44,7 +44,7 @@ static void check_coin(player_t *player)
     const int start_y = (int)bottom;
     const int end_y = (int)top;
 
-    for (int y = start_y; y <= end_y; ++y) {
+    for (int y = start_y; y <= end_y; y += 1) {
         check_line_coin(player, y);
     }
 }
