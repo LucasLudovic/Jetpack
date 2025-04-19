@@ -18,13 +18,11 @@
 
 void client::JetpackClient::_handleWaitingPlayers()
 {
-    std::cout << "Waiting Player\n";
     this->_state = CLIENT_STATE::WAITING;
 }
 
 void client::JetpackClient::_startMap()
 {
-    std::cout << "MAP START\n";
     this->_MapIsRetrieve = true;
 }
 
@@ -47,21 +45,24 @@ void client::JetpackClient::_retrieveMap(const std::string &map)
 
 void client::JetpackClient::_endMap()
 {
-    std::cout << "MAP END\n";
     this->_MapIsRetrieve = false;
 }
 
 void client::JetpackClient::_startGamePlayerOne()
 {
-    std::cout << "START GAME\n";
     this->_player.setPlayerNumber(1);
+    this->_player.setPlayerTransparency(false);
+    this->_player2.setPlayerNumber(2);
+    this->_player2.setPlayerTransparency(true);
     this->_state = CLIENT_STATE::PLAYING;
 }
 
 void client::JetpackClient::_startGamePlayerTwo()
 {
-    std::cout << "START GAME\n";
     this->_player.setPlayerNumber(2);
+    this->_player.setPlayerTransparency(false);
+    this->_player2.setPlayerNumber(1);
+    this->_player2.setPlayerTransparency(true);
     this->_state = CLIENT_STATE::PLAYING;
 
 }
@@ -71,20 +72,24 @@ void client::JetpackClient::_updatePlayerPosition(const std::string &pos)
     if (pos.find("position:") != std::string::npos) {
         size_t value = pos.find(":x=");
         size_t value2 = pos.find(":y=");
-        size_t value3 = pos.find(":s1=");
-        size_t value4 = pos.find(",s2=");
+        size_t value3 = pos.find(":y2=");
+        size_t value4 = pos.find(":s1=");
+        size_t value5 = pos.find(",s2=");
         std::string posX = pos.substr(value + 3, value2 - value - 3);
         std::string posY = pos.substr(value2 + 3, value3 - value2 - 3);
-        std::string scorePlayerOne = pos.substr(value3 + 4, value4 - value3 - 3);
-        std::string scorePlayerTwo = pos.substr(value4 + 4);
+        std::string posY2 = pos.substr(value3 + 4, value4 - value3 - 4);
+        std::string scorePlayerOne = pos.substr(value4 + 4, value5 - value4 - 4);
+        std::string scorePlayerTwo = pos.substr(value5 + 4);
         this->_player.setPosX(std::atof(posX.c_str()));
+        this->_player2.setPosX(std::atof(posX.c_str()));
         this->_player.setPosY(std::atof(posY.c_str()));
+        this->_player2.setPosY(std::atof(posY2.c_str()));
         if (this->_player.getPlayerNumber() == 1) {
             this->_player.setScore(std::atoi(scorePlayerOne.c_str()));
-            this->_player.setScoreOtherPlayer(std::atoi(scorePlayerTwo.c_str()));
+            this->_player2.setScore(std::atoi(scorePlayerTwo.c_str()));
         } else {
             this->_player.setScore(std::atoi(scorePlayerTwo.c_str()));
-            this->_player.setScoreOtherPlayer(std::atoi(scorePlayerOne.c_str()));
+            this->_player2.setScore(std::atoi(scorePlayerOne.c_str()));
         }
     }
 }
@@ -127,18 +132,18 @@ void client::JetpackClient::_gameRunning(const std::string &currentData)
         this->_updatePlayerPosition(currentData);
         if (currentData.find("WIN") != std::string::npos) {
             this->_player.setPlayerWin(true);
-            this->_displayEngine.renderEndGame(this->_player);
+            this->_displayEngine.renderEndGame(this->_player, this->_player2);
             this->_displayEngine.handleEvent();
             return;
         }
         if (currentData.find("LOSE") != std::string::npos) {
             this->_player.setPlayerWin(false);
-            this->_displayEngine.renderEndGame(this->_player);
+            this->_displayEngine.renderEndGame(this->_player, this->_player2);
             this->_displayEngine.handleEvent();
             return;
         }
         this->_retrieveCoin();
-        this->_displayEngine.renderFrame(this->_player, this->_map);
+        this->_displayEngine.renderFrame(this->_player, this->_player2 ,this->_map);
         this->_data.pop();
         if (this->_displayEngine.handleEvent())
             this->_msg.push("PRESSED");
