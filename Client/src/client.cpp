@@ -33,6 +33,22 @@ static std::string retrievePort(const char *argv[])
     return str;
 }
 
+static bool retrieveDebug(const char *argv[])
+{
+    std::string str;
+    bool debugFound = false;
+
+    if (argv == nullptr)
+        return false;
+    for (size_t i = 0; argv[i] != nullptr; i += 1) {
+        if (strcmp(argv[i], "-d") == 0) {
+            debugFound = true;
+            break;
+        }
+    }
+    return debugFound;
+}
+
 static std::string retrieveIP(const char *argv[])
 {
     std::string str;
@@ -57,8 +73,9 @@ uint8_t launchClient(const int argc, char const *argv[])
         return RET_FAILURE;
     std::string ip = retrieveIP(argv);
     std::string port = retrievePort(argv);
+    bool debugMode = retrieveDebug(argv);
     try {
-        client::JetpackClient NewClient(ip, port);
+        client::JetpackClient NewClient(ip, port, debugMode);
         NewClient.runClient();
     } catch (client::Socket::SocketError &e) {
         std::cerr << e.what() << '\n';

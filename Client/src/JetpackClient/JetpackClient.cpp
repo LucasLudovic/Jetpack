@@ -14,8 +14,8 @@
 #include <thread>
 
 client::JetpackClient::JetpackClient(
-    const std::string &ip, const std::string &port)
-    : _ip(ip), _port(port), _running(true), _network(ip, port),
+    const std::string &ip, const std::string &port, bool debugMode)
+    : _ip(ip), _port(port), _debugMode(debugMode), _running(true), _network(ip, port),
       _state(CLIENT_STATE::UNDEFIDED), _MapIsRetrieve(false)
 {}
 
