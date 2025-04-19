@@ -51,10 +51,19 @@ void client::JetpackClient::_endMap()
     this->_MapIsRetrieve = false;
 }
 
-void client::JetpackClient::_startGame()
+void client::JetpackClient::_startGamePlayerOne()
 {
     std::cout << "START GAME\n";
+    this->_player.setPlayerNumber(1);
     this->_state = CLIENT_STATE::PLAYING;
+}
+
+void client::JetpackClient::_startGamePlayerTwo()
+{
+    std::cout << "START GAME\n";
+    this->_player.setPlayerNumber(2);
+    this->_state = CLIENT_STATE::PLAYING;
+
 }
 
 void client::JetpackClient::_updatePlayerPosition(const std::string &pos)
@@ -62,13 +71,21 @@ void client::JetpackClient::_updatePlayerPosition(const std::string &pos)
     if (pos.find("position:") != std::string::npos) {
         size_t value = pos.find(":x=");
         size_t value2 = pos.find(":y=");
-        size_t value3 = pos.find(":s=");
+        size_t value3 = pos.find(":s1=");
+        size_t value4 = pos.find(",s2=");
         std::string posX = pos.substr(value + 3, value2 - value - 3);
         std::string posY = pos.substr(value2 + 3, value3 - value2 - 3);
-        std::string score = pos.substr(value3 + 3);
+        std::string scorePlayerOne = pos.substr(value3 + 4, value4 - value3 - 3);
+        std::string scorePlayerTwo = pos.substr(value4 + 4);
         this->_player.setPosX(std::atof(posX.c_str()));
         this->_player.setPosY(std::atof(posY.c_str()));
-        this->_player.setScore(std::atoi(score.c_str()));
+        if (this->_player.getPlayerNumber() == 1) {
+            this->_player.setScore(std::atoi(scorePlayerOne.c_str()));
+            this->_player.setScoreOtherPlayer(std::atoi(scorePlayerTwo.c_str()));
+        } else {
+            this->_player.setScore(std::atoi(scorePlayerTwo.c_str()));
+            this->_player.setScoreOtherPlayer(std::atoi(scorePlayerOne.c_str()));
+        }
     }
 }
 
@@ -147,11 +164,11 @@ void client::JetpackClient::_handleDisplay()
             }},
         {"GAME_START:0",
             [this] {
-                _startGame();
+                _startGamePlayerOne();
             }},
         {"GAME_START:1",
             [this] {
-                _startGame();
+                _startGamePlayerTwo();
             }},
     };
     {

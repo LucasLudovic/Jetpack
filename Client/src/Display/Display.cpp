@@ -235,9 +235,11 @@ void client::Display::_drawEnd(const Player &player)
     if (player.getPlayerWin()) {
         stream << "WIN :)\n";
         stream << "SCORE: " << player.getScore() << "\n";
+        stream << "Score other player: " << player.getScoreOtherPlayer() << '\n';
     } else {
         stream << "Lose (Skill Issue)\n";
         stream << "FINAL SCORE: " << player.getScore() << "\n";
+        stream << "Score other player: " << player.getScoreOtherPlayer() << '\n';
     }
 
     text.setString(stream.str());
