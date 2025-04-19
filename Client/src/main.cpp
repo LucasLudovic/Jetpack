@@ -6,7 +6,7 @@
 //
 
 #include "client.hpp"
-int main(const int argc, char const *argv[])
+int main(const int argc, char const *argv[], char **env)
 {
-    return launchClient(argc, argv);
+    return launchClient(argc, argv, env);
 }
