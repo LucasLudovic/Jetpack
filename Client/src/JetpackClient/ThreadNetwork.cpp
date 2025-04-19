@@ -21,6 +21,8 @@ void client::JetpackClient::_runNetworkThread()
             auto data = this->_network.getCommand();
 
             if (!data.empty()) {
+                if (this->_debugMode)
+                    std::cout << data << '\n';
                 std::lock_guard<std::mutex> lock(this->data_mutex);
                 this->_data.push(data);
             }

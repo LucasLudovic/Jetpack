@@ -24,7 +24,6 @@
 
 client::Display::Display()
 {
-    std::cout << "Init display" << std::endl;
     this->_window =
         std::make_unique<sf::RenderWindow>(sf::VideoMode({1920, 1080}), "");
     if (!this->_window)
@@ -34,7 +33,6 @@ client::Display::Display()
 
 client::Display::~Display()
 {
-    std::cout << "Destroy display" << std::endl;
     if (this->_window)
         this->_window->close();
 }
@@ -75,7 +73,6 @@ bool client::Display::handleEvent()
 
 void client::Display::_loadAssets()
 {
-    std::cout << "Loading assets" << std::endl;
     this->_font = std::make_unique<sf::Font>();
     this->_font->loadFromFile(
         "./assets/fonts/JetBrainsMonoNerdFont-Medium.ttf");
@@ -86,7 +83,6 @@ void client::Display::_loadAssets()
     this->_loadCoinAssets();
     this->_loadPlayerAssets();
     this->_loadLaserAssets();
-    std::cout << "Done loading assets" << std::endl;
 }
 
 void client::Display::_loadBackgroundAsset()

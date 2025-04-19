@@ -34,7 +34,7 @@ namespace client {
             std::string _msg;
         };
 
-        JetpackClient(const std::string &ip, const std::string &port);
+        JetpackClient(const std::string &ip, const std::string &port, bool debugMode);
         ~JetpackClient();
 
         std::uint8_t runClient();
@@ -42,6 +42,7 @@ namespace client {
        private:
         std::string _ip;
         std::string _port;
+        bool _debugMode;
         bool _running;
         CLIENT_STATE _state;
         std::queue<std::string> _data;
