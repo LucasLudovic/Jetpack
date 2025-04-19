@@ -47,21 +47,11 @@ static void send_draw(server_t *server)
         send(server->players[0]->socket->fd, msgDraw, strlen(msgDraw), 0);
 }
 
-static void send_end(server_t *server)
+static void send_winner(server_t *server, size_t score1, size_t score2)
 {
     const char msgWin[] = "WIN\r\n";
     const char msgLose[] = "LOSE\r\n";
-    size_t score1 = 0;
-    size_t score2 = 0;
 
-    if (server->players[0])
-        score1 = server->players[0]->score;
-    if (server->players[1])
-        score2 = server->players[1]->score;
-    for (size_t i = 0; i < server->nb_player; i += 1)
-        if (server->players[i]->is_alive == TRUE &&
-            server->players[i]->ended != TRUE)
-            return;
     if (score1 > score2) {
         if (server->players[0])
             send(server->players[0]->socket->fd, msgWin, strlen(msgWin), 0);
@@ -79,10 +69,26 @@ static void send_end(server_t *server)
     send_draw(server);
 }
 
+static void send_end(server_t *server)
+{
+    size_t score1 = 0;
+    size_t score2 = 0;
+
+    if (server->players[0])
+        score1 = server->players[0]->score;
+    if (server->players[1])
+        score2 = server->players[1]->score;
+    for (size_t i = 0; i < server->nb_player; i += 1)
+        if (server->players[i]->is_alive == TRUE &&
+            server->players[i]->ended != TRUE)
+            return;
+    send_winner(server, score1, score2);
+}
+
 static int check_collision(server_t *server, player_t *player)
 {
     if (server->map[MAP_HEIGHT - 1 - (size_t)player->position.y]
-                   [(size_t)player->position.x] == 'e') {
+        [(size_t)player->position.x] == 'e') {
         player->is_alive = FALSE;
         player->ended = TRUE;
         server->game_state = ENDED;
@@ -123,7 +129,6 @@ int execute_instructions(server_t *server, player_t *player, size_t i)
             return SUCCESS;
         }
     }
-    send_end(server);
     send(player->socket->fd, unknown, strlen(unknown), 0);
     return SUCCESS;
 }
