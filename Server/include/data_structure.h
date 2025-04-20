@@ -8,6 +8,13 @@
 #ifndef DATA_STRUCTURE_H_
     #define DATA_STRUCTURE_H_
 
+/**
+ * @struct position_s
+ * @brief Represents a 2D vector of ints.
+ *
+ * Each component is an integer, used to store
+ * the position in the game.
+ */
 typedef struct position_s {
     int xPos;
     int yPos;
