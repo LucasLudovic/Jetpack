@@ -65,8 +65,7 @@ static void send_map_line(server_t *server, size_t i)
         }
         debug(server, server->map[i], TRUE);
         server->players[j]->map[i] = strdup(server->map[i]);
-        if (send(server->players[j]->socket->fd, "\n",
-                1, 0) < 0) {
+        if (send(server->players[j]->socket->fd, "\n", 1, 0) < 0) {
             fprintf(stderr, "Unable to send map\n");
             server->destroy(&server);
             exit(EXIT_FAILURE);
@@ -166,6 +165,10 @@ void load_map(server_t *server)
             free(buff);
             buff = NULL;
         }
+    }
+    if (buff != NULL) {
+        free(buff);
+        buff = NULL;
     }
     check_map_height(server, nb_lines);
     fclose(file);
