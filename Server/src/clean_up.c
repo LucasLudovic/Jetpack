@@ -62,7 +62,7 @@ void free_player(player_t **player)
             free((*player)->map[i]);
             (*player)->map[i] = NULL;
         }
-    } 
+    }
     free(*player);
     *player = NULL;
 }
