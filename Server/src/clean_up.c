@@ -6,6 +6,7 @@
 */
 
 #include "cleanup.h"
+#include "map.h"
 #include "player.h"
 #include "server.h"
 #include <netinet/in.h>
@@ -56,6 +57,12 @@ void free_player(player_t **player)
         free((*player)->socket);
         (*player)->socket = NULL;
     }
+    for (size_t i = 0; i < MAP_HEIGHT; i += 1) {
+        if ((*player)->map[i]) {
+            free((*player)->map[i]);
+            (*player)->map[i] = NULL;
+        }
+    } 
     free(*player);
     *player = NULL;
 }
