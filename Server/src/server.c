@@ -15,6 +15,18 @@
 #include <sys/poll.h>
 #include <sys/socket.h>
 
+void debug(server_t *server, const char *data, int is_send)
+{
+    if (!server || !server->is_debug) {
+        return;
+    }
+    if (is_send) {
+        printf("Send: %s\n", data);
+        return;
+    }
+    printf("Receive: %s\n", data);
+}
+
 int run_app(const char *port, const char *map, const char *debug)
 {
     server_t AUTOFREE_SERVER *server = NULL;

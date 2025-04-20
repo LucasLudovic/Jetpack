@@ -30,43 +30,69 @@ static void send_death(server_t *server)
         if (player == NULL)
             return;
         if (player->is_alive == TRUE) {
+            debug(server, msgWin, TRUE);
             send(player->socket->fd, msgWin, strlen(msgWin), 0);
             continue;
         }
+        debug(server, msgLose, TRUE);
         send(player->socket->fd, msgLose, strlen(msgLose), 0);
     }
 }
 
-static void send_draw(server_t *server)
-{
-    const char msgDraw[] = "DRAW\r\n";
-
-    if (server->players[1])
-        send(server->players[1]->socket->fd, msgDraw, strlen(msgDraw), 0);
-    if (server->players[0])
-        send(server->players[0]->socket->fd, msgDraw, strlen(msgDraw), 0);
-}
-
-static void send_winner(server_t *server, size_t score1, size_t score2)
+static int send_first_win(server_t *server, size_t score1, size_t score2)
 {
     const char msgWin[] = "WIN\r\n";
     const char msgLose[] = "LOSE\r\n";
 
     if (score1 > score2) {
-        if (server->players[0])
+        if (server->players[0]) {
+            debug(server, msgWin, TRUE);
             send(server->players[0]->socket->fd, msgWin, strlen(msgWin), 0);
-        if (server->players[1])
+        }
+        if (server->players[1]) {
+            debug(server, msgLose, TRUE);
             send(server->players[1]->socket->fd, msgLose, strlen(msgLose), 0);
-        return;
+        }
+        return TRUE;
     }
+    return FALSE;
+}
+
+static int send_second_win(server_t *server, size_t score1, size_t score2)
+{
+    const char msgWin[] = "WIN\r\n";
+    const char msgLose[] = "LOSE\r\n";
+
     if (score1 < score2) {
-        if (server->players[1])
+        if (server->players[1]) {
+            debug(server, msgWin, TRUE);
             send(server->players[1]->socket->fd, msgWin, strlen(msgWin), 0);
-        if (server->players[0])
+        }
+        if (server->players[0]) {
+            debug(server, msgLose, TRUE);
             send(server->players[0]->socket->fd, msgLose, strlen(msgLose), 0);
-        return;
+        }
+        return TRUE;
     }
-    send_draw(server);
+    return FALSE;
+}
+
+static void send_winner(server_t *server, size_t score1, size_t score2)
+{
+    const char msgDraw[] = "DRAW\r\n";
+
+    if (send_first_win(server, score1, score2))
+        return;
+    if (send_second_win(server, score1, score2))
+        return;
+    if (server->players[1]) {
+        debug(server, msgDraw, TRUE);
+        send(server->players[1]->socket->fd, msgDraw, strlen(msgDraw), 0);
+    }
+    if (server->players[0]) {
+        debug(server, msgDraw, TRUE);
+        send(server->players[0]->socket->fd, msgDraw, strlen(msgDraw), 0);
+    }
 }
 
 static void send_end(server_t *server)
@@ -134,9 +160,17 @@ static int check_early_return(server_t *server, player_t *player)
     return FALSE;
 }
 
-int execute_instructions(server_t *server, player_t *player, size_t i)
+static int send_unknown_commad(server_t *server, player_t *player)
 {
     const char unknown[] = "Unknown command";
+
+    debug(server, unknown, TRUE);
+    send(player->socket->fd, unknown, strlen(unknown), 0);
+    return SUCCESS;
+}
+
+int execute_instructions(server_t *server, player_t *player, size_t i)
+{
     char buff[BUFFSIZE] = {0};
     size_t size_read = 0;
 
@@ -145,6 +179,7 @@ int execute_instructions(server_t *server, player_t *player, size_t i)
         server->remove_player(server, i);
         return FAILURE;
     }
+    debug(server, buff, FALSE);
     if (check_early_return(server, player) == TRUE)
         return SUCCESS;
     for (size_t i = 0; commands[i].name != NULL; i += 1) {
@@ -154,6 +189,5 @@ int execute_instructions(server_t *server, player_t *player, size_t i)
             return SUCCESS;
         }
     }
-    send(player->socket->fd, unknown, strlen(unknown), 0);
-    return SUCCESS;
+    return send_unknown_commad(server, player);
 }

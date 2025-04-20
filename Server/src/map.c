@@ -30,12 +30,14 @@ static void send_end_map(
             server->destroy(&server);
             exit(EXIT_FAILURE);
         }
+        debug(server, endl, TRUE);
         if (send(server->players[player_index]->socket->fd, end_map,
                 strlen(end_map), 0) < 0) {
             fprintf(stderr, "Unable to send end_map\n");
             server->destroy(&server);
             exit(EXIT_FAILURE);
         }
+        debug(server, end_map, TRUE);
     }
 }
 
@@ -47,6 +49,7 @@ static void send_start_map(
     if (line_index == 0) {
         send(server->players[player_index]->socket->fd, start_map,
             strlen(start_map), 0);
+        debug(server, start_map, TRUE);
     }
 }
 
@@ -60,6 +63,7 @@ static void send_map_line(server_t *server, size_t i)
             server->destroy(&server);
             exit(EXIT_FAILURE);
         }
+        debug(server, server->map[i], TRUE);
         server->players[j]->map[i] = strdup(server->map[i]);
         if (send(server->players[j]->socket->fd, "\n",
                 1, 0) < 0) {
@@ -67,6 +71,7 @@ static void send_map_line(server_t *server, size_t i)
             server->destroy(&server);
             exit(EXIT_FAILURE);
         }
+        debug(server, "\n", TRUE);
         send_end_map(server, j, i);
     }
 }

@@ -51,5 +51,6 @@ typedef struct server_s {
 server_t *create_server(int port, const char *map, int debug);
 int run_server(struct server_s *this);
 void send_map(server_t *server);
+void debug(server_t *server, const char *data, int is_send);
 
 #endif /* ifndef SERVER_H_ */
