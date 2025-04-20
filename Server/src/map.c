@@ -166,10 +166,8 @@ void load_map(server_t *server)
             buff = NULL;
         }
     }
-    if (buff != NULL) {
+    if (buff != NULL)
         free(buff);
-        buff = NULL;
-    }
     check_map_height(server, nb_lines);
     fclose(file);
 }
