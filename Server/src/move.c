@@ -126,6 +126,7 @@ void move_up(server_t *server, player_t *player)
     snprintf(buff, BUFFSIZE, "position:x=%f:y=%f:y2=%f:s1=%zu,s2=%zu\r\n",
         player->position.x, player->position.y, posY2, score1, score2);
     send(player->socket->fd, buff, strlen(buff), 0);
+    debug(server, buff, TRUE);
 }
 
 void send_pos(server_t *server, player_t *player)
@@ -146,4 +147,5 @@ void send_pos(server_t *server, player_t *player)
     snprintf(buff, BUFFSIZE, "position:x=%f:y=%f:y2=%f:s1=%zu,s2=%zu\r\n",
         player->position.x, player->position.y, posY2, score1, score2);
     send(player->socket->fd, buff, strlen(buff), 0);
+    debug(server, buff, TRUE);
 }

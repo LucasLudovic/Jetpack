@@ -100,6 +100,7 @@ static void start_game(server_t *this)
 
     for (size_t i = 0; i < this->nb_player; i += 1) {
         snprintf(msg, BUFFSIZE, "GAME_START:%zu", i);
+        debug(this, msg, TRUE);
         this->send(this->players[i], msg);
     }
     this->game_state = STARTED;
