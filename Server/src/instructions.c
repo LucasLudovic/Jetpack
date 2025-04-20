@@ -157,6 +157,10 @@ static int check_early_return(server_t *server, player_t *player)
         return TRUE;
     if (check_collision(server, player))
         return TRUE;
+    if (server->nb_player == 1) {
+        send_first_win(server, player->score, 0);
+        return TRUE;
+    }
     return FALSE;
 }
 
