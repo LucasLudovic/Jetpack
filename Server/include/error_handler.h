@@ -10,6 +10,14 @@
 
     #include <setjmp.h>
 
+/**
+ * @struct error_s
+ * @brief Error context for try/catch emulation.
+ *
+ * @details
+ * Contains the jump buffer for setjmp/longjmp and an error
+ * message describing the exception that was thrown.
+ */
 typedef struct error_s {
     jmp_buf buf;
     char *message;

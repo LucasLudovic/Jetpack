@@ -14,6 +14,14 @@
 
 typedef struct server_s server_t;
 
+/**
+ * @brief Load the game map into server memory.
+ *
+ * Reads map file specified in server->map_file,
+ * populates server->map array, and validates dimensions.
+ *
+ * @param server Server instance to load map into.
+ */
 void load_map(server_t *server);
 
 #endif
